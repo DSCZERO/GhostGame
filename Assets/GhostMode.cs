@@ -10,20 +10,30 @@ public class GhostMode : MonoBehaviour
     public float currentGhostTime;                // Current remaining ghost time
     public float ghostSpeed = 7f;                 // Ghost movement speed
     public float returnDistance = 1.5f;           // How close you need to be to return to your body
+
+    [Header("Ghost Visual Effects")]
+    public float ghostAlpha = 0.5f;               // Target transparency when in ghost mode (0 = invisible, 1 = opaque)
+    public float fadeDuration = 0.5f;             // Duration of the fade effect
     
+    // Add a reference to the ghost material for doors
+    public Material doorGhostMaterial;            // The material to use for doors in ghost mode
+
     [Header("Physical Body")]
     public GameObject bodyPrefab;                 // Optional body prefab
     private GameObject bodyInstance;              // Instantiated body
-    
+
     // Internal references
     private FirstPersonController fpc;            // Reference to first person controller
     private Rigidbody rb;                         // Reference to rigidbody
     private Camera playerCamera;                  // Reference to player camera
     private Vector3 bodyPosition;                 // Body position
     private Quaternion bodyRotation;              // Body rotation
-    private bool isInGhostMode = false;           // Current ghost mode state
+    public bool IsInGhostMode { get; private set; } = false;
     private Collider playerCollider;              // Player collider
     private Renderer playerRenderer;              // Player renderer
+
+    // Dictionary to store each door object and its original material
+    private Dictionary<GameObject, Material> originalDoorMaterials = new Dictionary<GameObject, Material>();
 
     void Start()
     {
@@ -40,24 +50,23 @@ public class GhostMode : MonoBehaviour
 
     void Update()
     {
-        // Toggle ghost mode with G key
+        // Toggle ghost mode with ghostKey
         if (Input.GetKeyDown(ghostKey))
         {
             // Case 1: Not in ghost mode - try to enter ghost mode
-            if (!isInGhostMode && currentGhostTime > 0)
+            if (!IsInGhostMode && currentGhostTime > 0)
             {
                 EnterGhostMode();
             }
             // Case 2: In ghost mode and near body - return to body
-            else if (isInGhostMode && IsNearBody())
+            else if (IsInGhostMode && IsNearBody())
             {
                 ReturnToBody();
             }
-            // Other cases: do nothing to avoid conflicts
         }
         
         // Ghost mode timer and movement
-        if (isInGhostMode)
+        if (IsInGhostMode)
         {
             // Decrease ghost mode time
             currentGhostTime -= Time.deltaTime;
@@ -84,7 +93,7 @@ public class GhostMode : MonoBehaviour
     
     void EnterGhostMode()
     {
-        isInGhostMode = true;
+        IsInGhostMode = true;
         
         // Save body position and rotation
         bodyPosition = transform.position;
@@ -115,35 +124,38 @@ public class GhostMode : MonoBehaviour
         rb.useGravity = false;          // Disable gravity
         rb.velocity = Vector3.zero;     // Clear velocity
         
-        // Ignore collisions - move player to a special layer
+        // Change player to Ghost layer
         gameObject.layer = LayerMask.NameToLayer("Ghost");
+        // Ignore collisions only with Door objects.
+        Physics.IgnoreLayerCollision(
+            LayerMask.NameToLayer("Ghost"), 
+            LayerMask.NameToLayer("Door"), 
+            true
+        );
         
-        // Set layer collision
-        Physics.IgnoreLayerCollision(LayerMask.NameToLayer("Ghost"), LayerMask.NameToLayer("Default"), true);
+        // Keep playerCollider enabled so that collisions with walls/floors remain active
         
-        // Disable player collider
-        if (playerCollider)
-        {
-            playerCollider.enabled = false;
-        }
-        
-        // Remove shadow - disable shadow casting
+        // Disable shadow casting for main and child renderers
         if (playerRenderer)
         {
             playerRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
         }
-        
-        // Also remove shadows from all child renderers
         Renderer[] childRenderers = GetComponentsInChildren<Renderer>();
         foreach (Renderer r in childRenderers)
         {
             r.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
         }
+        
+        // Start fade effect to ghostAlpha
+        StartCoroutine(FadeToAlpha(ghostAlpha));
+        
+        // Change all doors to the ghost door material
+        ApplyGhostDoorMaterial();
     }
     
     void ReturnToBody()
     {
-        isInGhostMode = false;
+        IsInGhostMode = false;
         
         // Move player back to body position
         transform.position = bodyPosition;
@@ -159,31 +171,39 @@ public class GhostMode : MonoBehaviour
         rb.useGravity = true;
         rb.velocity = Vector3.zero;
         
-        // Restore collision
+        // Restore collision: change player back to Default layer
         gameObject.layer = LayerMask.NameToLayer("Default");
-        Physics.IgnoreLayerCollision(LayerMask.NameToLayer("Ghost"), LayerMask.NameToLayer("Default"), false);
+        Physics.IgnoreLayerCollision(
+            LayerMask.NameToLayer("Ghost"), 
+            LayerMask.NameToLayer("Door"), 
+            false
+        );
         
-        // Enable player collider
+        // Re-enable player collider
         if (playerCollider)
         {
             playerCollider.enabled = true;
         }
         
-        // Restore shadow casting
+        // Restore shadow casting for main and child renderers
         if (playerRenderer)
         {
             playerRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.On;
         }
-        
-        // Restore shadows for all child renderers
         Renderer[] childRenderers = GetComponentsInChildren<Renderer>();
         foreach (Renderer r in childRenderers)
         {
             r.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.On;
         }
+        
+        // Start fade effect back to full opacity (alpha 1)
+        StartCoroutine(FadeToAlpha(1f));
+        
+        // Revert all doors to their original materials
+        RevertDoorMaterials();
     }
     
-    // Force return to body when time runs out
+    // Force return to body when ghost time runs out
     void ForceReturnToBody()
     {
         ReturnToBody();
@@ -196,24 +216,20 @@ public class GhostMode : MonoBehaviour
         float horizontal = Input.GetAxis("Horizontal");
         float vertical = Input.GetAxis("Vertical");
         
-        // Calculate movement vector based on camera
+        // Calculate movement vector based on camera orientation
         Vector3 forward = playerCamera.transform.forward;
         Vector3 right = playerCamera.transform.right;
-        
-        // Keep vertical component for forward/backward movement
-        // Only zero out y component for side-to-side movement
         right.y = 0;
         right.Normalize();
         
-        // Calculate movement direction
         Vector3 moveDirection = (forward * vertical + right * horizontal).normalized;
         
-        // Add up/down movement using jump and crouch keys
-        if (Input.GetKey(fpc.jumpKey)) // Jump key (usually Space)
+        // Add up/down movement using jump/crouch
+        if (Input.GetKey(fpc.jumpKey))
         {
             moveDirection += Vector3.up;
         }
-        if (Input.GetKey(fpc.crouchKey)) // Crouch key (usually Left Control)
+        if (Input.GetKey(fpc.crouchKey))
         {
             moveDirection += Vector3.down;
         }
@@ -227,5 +243,96 @@ public class GhostMode : MonoBehaviour
     {
         float distanceToBody = Vector3.Distance(transform.position, bodyPosition);
         return distanceToBody <= returnDistance;
+    }
+    
+    // Coroutine for smoothly fading all renderers to a target alpha value
+    IEnumerator FadeToAlpha(float targetAlpha)
+    {
+        // Gather all renderers (main and children)
+        List<Renderer> renderers = new List<Renderer>();
+        if (playerRenderer != null)
+        {
+            renderers.Add(playerRenderer);
+        }
+        renderers.AddRange(GetComponentsInChildren<Renderer>());
+        
+        // Cache original colors
+        Dictionary<Renderer, Color> originalColors = new Dictionary<Renderer, Color>();
+        foreach (Renderer rend in renderers)
+        {
+            originalColors[rend] = rend.material.color;
+        }
+        
+        float elapsedTime = 0f;
+        while (elapsedTime < fadeDuration)
+        {
+            elapsedTime += Time.deltaTime;
+            float blend = Mathf.Clamp01(elapsedTime / fadeDuration);
+            foreach (Renderer rend in renderers)
+            {
+                Color originalColor = originalColors[rend];
+                float newAlpha = Mathf.Lerp(originalColor.a, targetAlpha, blend);
+                Color newColor = new Color(
+                    originalColor.r, 
+                    originalColor.g, 
+                    originalColor.b, 
+                    newAlpha
+                );
+                rend.material.color = newColor;
+            }
+            yield return null;
+        }
+    }
+    
+    /// <summary>
+    /// Find all objects on the "Door" layer, store their original material,
+    /// and assign the doorGhostMaterial.
+    /// </summary>
+    void ApplyGhostDoorMaterial()
+    {
+        // Clear the dictionary before applying new ghost materials
+        originalDoorMaterials.Clear();
+
+        // Find all objects in the scene
+        GameObject[] allObjects = FindObjectsOfType<GameObject>();
+        
+        foreach (GameObject obj in allObjects)
+        {
+            if (obj.layer == LayerMask.NameToLayer("Door"))
+            {
+                Renderer rend = obj.GetComponent<Renderer>();
+                if (rend != null && doorGhostMaterial != null)
+                {
+                    // Store the original material
+                    originalDoorMaterials[obj] = rend.material;
+                    // Assign ghost material
+                    rend.material = doorGhostMaterial;
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// Revert all door objects to their original materials.
+    /// </summary>
+    void RevertDoorMaterials()
+    {
+        foreach (var kvp in originalDoorMaterials)
+        {
+            GameObject doorObject = kvp.Key;
+            Material originalMat = kvp.Value;
+
+            if (doorObject != null)
+            {
+                Renderer rend = doorObject.GetComponent<Renderer>();
+                if (rend != null && originalMat != null)
+                {
+                    rend.material = originalMat;
+                }
+            }
+        }
+        
+        // Clear after reverting
+        originalDoorMaterials.Clear();
     }
 }

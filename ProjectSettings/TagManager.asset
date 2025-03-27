@@ -5,6 +5,7 @@ TagManager:
   serializedVersion: 2
   tags:
   - keypad
+  - Doors
   layers:
   - Default
   - TransparentFX
@@ -12,7 +13,7 @@ TagManager:
   - Ghost
   - Water
   - UI
-  - 
+  - Door
   - 
   - 
   - 

@@ -15,6 +15,9 @@ public class keypad : MonoBehaviour
     public Text displayText;
     public AudioSource audioData;
 
+    // Reference to the GhostMode script
+    public GhostMode ghostMode;
+
     //Local private variables
     private bool keypadScreen;
     private float btnClicked = 0;
@@ -35,30 +38,40 @@ public class keypad : MonoBehaviour
             if (input == curPassword)
             {
                 Debug.Log("Correct Password!");
-                
+
+                // If an object is set to be destroyed, disable it
                 if (objectToDestroy != null)
                 {
                     objectToDestroy.SetActive(false);
                 }
+                
+                // Simulate pressing Q to quit the keypad
+                objectToEnable.SetActive(false);
+                keypadScreen = false;
+                Cursor.visible = false;
                 input = "";
                 btnClicked = 0;
-
+                displayText.text = input.ToString();
             }
             else
             {
-                //Reset input varible
+                // Reset input if the password is incorrect
                 input = "";
                 displayText.text = input.ToString();
                 audioData.Play();
                 btnClicked = 0;
             }
-
         }
-
     }
 
     void OnGUI()
     {
+        // If the player is in ghost mode, skip keypad interaction
+        if (ghostMode != null && ghostMode.IsInGhostMode)
+        {
+            return;
+        }
+
         // Action for clicking keypad on screen
         if (Input.GetMouseButtonDown(0))
         {
@@ -81,7 +94,6 @@ public class keypad : MonoBehaviour
                         keypadScreen = true;
                     }
                 }
-
             }
         }
 
@@ -89,7 +101,6 @@ public class keypad : MonoBehaviour
         {
             objectToEnable.SetActive(true);
         }
-
     }
 
     public void ValueEntered(string valueEntered)
@@ -105,19 +116,17 @@ public class keypad : MonoBehaviour
                 Cursor.visible = false;
                 break;
 
-            case "C": //CLEAR
+            case "C": // CLEAR
                 input = "";
                 btnClicked = 0;
                 displayText.text = input.ToString();
                 break;
 
-            default: // Buton clicked add a variable
+            default: // Append value to input when a button is clicked
                 btnClicked++;
                 input += valueEntered;
                 displayText.text = input.ToString();
                 break;
         }
-
-
     }
 }
