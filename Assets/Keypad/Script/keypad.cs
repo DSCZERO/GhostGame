@@ -18,6 +18,8 @@ public class keypad : MonoBehaviour
     // Reference to the GhostMode script
     public GhostMode ghostMode;
 
+    public MonoBehaviour cameraMovement;
+
     //Local private variables
     private bool keypadScreen;
     private float btnClicked = 0;
@@ -44,6 +46,8 @@ public class keypad : MonoBehaviour
                 {
                     objectToDestroy.SetActive(false);
                 }
+
+                ExitKeypad();
                 
                 // Simulate pressing Q to quit the keypad
                 objectToEnable.SetActive(false);
@@ -87,19 +91,14 @@ public class keypad : MonoBehaviour
                     keypadScreen = true;
                     Cursor.visible = true;
                     Cursor.lockState = CursorLockMode.None;
+                    objectToEnable.SetActive(true);
 
-                    var selectionRender = selection.GetComponent<Renderer>();
-                    if (selectionRender != null)
+                    if (cameraMovement != null)
                     {
-                        keypadScreen = true;
+                        cameraMovement.enabled = false;
                     }
                 }
             }
-        }
-
-        if (keypadScreen)
-        {
-            objectToEnable.SetActive(true);
         }
     }
 
@@ -108,12 +107,7 @@ public class keypad : MonoBehaviour
         switch (valueEntered)
         {
             case "Q": // QUIT
-                objectToEnable.SetActive(false);
-                btnClicked = 0;
-                keypadScreen = false;
-                input = "";
-                displayText.text = input.ToString();
-                Cursor.visible = false;
+                ExitKeypad();
                 break;
 
             case "C": // CLEAR
@@ -127,6 +121,22 @@ public class keypad : MonoBehaviour
                 input += valueEntered;
                 displayText.text = input.ToString();
                 break;
+        }
+    }
+
+    void ExitKeypad()
+    {
+        objectToEnable.SetActive(false);
+        btnClicked = 0;
+        keypadScreen = false;
+        input = "";
+        displayText.text = input.ToString();
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
+
+        if (cameraMovement != null)
+        {
+            cameraMovement.enabled = true;
         }
     }
 }
