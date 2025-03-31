@@ -1110,6 +1110,17 @@ MonoBehaviour:
   fadeDuration: 0.5
   doorGhostMaterial: {fileID: 2100000, guid: 5fc0890bf0bee7947a876f6fe7243d2f, type: 2}
   bodyPrefab: {fileID: 0}
+--- !u!114 &1388956313 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4459864850019384740, guid: 6bacecc4f3df9584198879c73a6b6c36, type: 3}
+  m_PrefabInstance: {fileID: 1693185061}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1388956305}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d90ba6530d9bfda47abb4610956b2f44, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1594098214
 GameObject:
   m_ObjectHideFlags: 0
@@ -1183,6 +1194,7 @@ MonoBehaviour:
   displayText: {fileID: 1975925547}
   audioData: {fileID: 546238889}
   ghostMode: {fileID: 1388956312}
+  cameraMovement: {fileID: 1388956313}
 --- !u!1001 &1693185061
 PrefabInstance:
   m_ObjectHideFlags: 0
