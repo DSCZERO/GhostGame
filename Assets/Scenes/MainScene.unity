@@ -1059,7 +1059,14 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Press G to shift
+  m_text: 'Press G to shift
+
+    Go back to your body and press
+
+    G to become
+    human again
+
+'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -1193,7 +1200,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: -91.491, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0.0612669, y: 11.018104}
+  m_AnchoredPosition: {x: 0.0612669, y: 11.95}
   m_SizeDelta: {x: 20, y: 5}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &587508187
@@ -2214,7 +2221,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ghostKey: 103
-  maxGhostTime: 30
+  maxGhostTime: 9000
   currentGhostTime: 0
   ghostSpeed: 7
   returnDistance: 1.5
