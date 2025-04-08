@@ -21,7 +21,6 @@ public class keypad : MonoBehaviour
     public MonoBehaviour cameraMovement;
 
     //Local private variables
-    private bool keypadScreen;
     private float btnClicked = 0;
     private float numOfGuesses;
 
@@ -51,7 +50,6 @@ public class keypad : MonoBehaviour
                 
                 // Simulate pressing Q to quit the keypad
                 objectToEnable.SetActive(false);
-                keypadScreen = false;
                 Cursor.visible = false;
                 input = "";
                 btnClicked = 0;
@@ -88,7 +86,6 @@ public class keypad : MonoBehaviour
 
                 if (selection.CompareTag("keypad"))
                 {
-                    keypadScreen = true;
                     Cursor.visible = true;
                     Cursor.lockState = CursorLockMode.None;
                     objectToEnable.SetActive(true);
@@ -128,7 +125,6 @@ public class keypad : MonoBehaviour
     {
         objectToEnable.SetActive(false);
         btnClicked = 0;
-        keypadScreen = false;
         input = "";
         displayText.text = input.ToString();
         Cursor.visible = false;

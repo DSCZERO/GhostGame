@@ -13,7 +13,7 @@ public class TitleSceneUI : MonoBehaviour
 
     public void OpenScene()
     {
-        SceneManager.LoadScene("MainScene");
+        SceneManager.LoadScene("Tutorial Level");
     }
 
     public void ExitGame()
