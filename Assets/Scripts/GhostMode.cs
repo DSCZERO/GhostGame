@@ -10,6 +10,7 @@ public class GhostMode : MonoBehaviour
     public float currentGhostTime;                // Current remaining ghost time
     public float ghostSpeed = 7f;                 // Ghost movement speed
     public float returnDistance = 1.5f;           // How close you need to be to return to your body
+    private bool isInNoGhostZone = false;         // Tracks whether in a sacred zone
 
     [Header("Ghost Visual Effects")]
     public float ghostAlpha = 0.5f;               // Target transparency when in ghost mode (0 = invisible, 1 = opaque)
@@ -35,6 +36,7 @@ public class GhostMode : MonoBehaviour
     // Dictionary to store each door object and its original material
     private Dictionary<GameObject, Material> originalDoorMaterials = new Dictionary<GameObject, Material>();
 
+
     void Start()
     {
         // Get component references
@@ -54,7 +56,7 @@ public class GhostMode : MonoBehaviour
         if (Input.GetKeyDown(ghostKey))
         {
             // Case 1: Not in ghost mode - try to enter ghost mode
-            if (!IsInGhostMode && currentGhostTime > 0)
+            if (!IsInGhostMode && currentGhostTime > 0 && !isInNoGhostZone)
             {
                 EnterGhostMode();
             }
@@ -334,5 +336,26 @@ public class GhostMode : MonoBehaviour
         
         // Clear after reverting
         originalDoorMaterials.Clear();
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("NoGhostZone"))
+        {
+            isInNoGhostZone = true;
+
+            if (IsInGhostMode)
+            {
+                ForceReturnToBody();
+            }
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.CompareTag("NoGhostZone"))
+        {
+            isInNoGhostZone = false;
+        }
     }
 }

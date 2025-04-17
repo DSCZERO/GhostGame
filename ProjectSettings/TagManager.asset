@@ -8,6 +8,7 @@ TagManager:
   - Doors
   - Fire
   - Possessable
+  - NoGhostZone
   layers:
   - Default
   - TransparentFX
