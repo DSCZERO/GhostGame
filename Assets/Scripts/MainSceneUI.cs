@@ -19,6 +19,9 @@ public class MainSceneUI : MonoBehaviour
 
     public void OpenScene()
     {
+        // Unlock cursor before loading the TitleScene
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
         SceneManager.LoadScene("TitleScene");
     }
 }
