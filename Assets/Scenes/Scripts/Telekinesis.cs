@@ -9,6 +9,9 @@ public class Telekenisis : MonoBehaviour
     public float range = 10f;
     public float moveSpeed = 5f;
     public Camera playerCamera;
+    public FirstPersonController playerController;
+    public MonoBehaviour playerMovementScript;
+
 
     private Transform targetedObject;
 
@@ -20,11 +23,29 @@ public class Telekenisis : MonoBehaviour
                 TryFocusOnObject();
 
             if (targetedObject != null)
+            {
                 MoveObjectWithInput();
+
+                if (playerController.enabled)
+                { 
+                    playerController.enabled = false; 
+                }
+
+                // Disable player control
+                if (playerMovementScript != null)
+                    playerMovementScript.enabled = false;
+            }
         }
         else
         {
-            targetedObject = null; // Release object when Q is released
+            if (targetedObject != null)
+            {
+                targetedObject = null; // Release object when Q is released
+                playerController.enabled = true; // Re-enable on release
+                // Disable player control
+                if (playerMovementScript != null)
+                    playerMovementScript.enabled = false;
+            }
         }
     }
 

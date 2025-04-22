@@ -439,6 +439,8 @@ MonoBehaviour:
   range: 10
   moveSpeed: 5
   playerCamera: {fileID: 1245788747}
+  playerController: {fileID: 1388956313}
+  playerMovementScript: {fileID: 1388956313}
 --- !u!4 &83919075
 Transform:
   m_ObjectHideFlags: 0
