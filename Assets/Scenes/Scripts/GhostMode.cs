@@ -47,6 +47,9 @@ public class GhostMode : MonoBehaviour
     private Collider playerCollider;
     private Renderer playerRenderer;
     private Dictionary<GameObject, Material> originalDoorMaterials = new Dictionary<GameObject, Material>();
+    
+    // Store the original crouching settings
+    private bool originalEnableCrouch;
 
     void Start()
     {
@@ -84,6 +87,15 @@ public class GhostMode : MonoBehaviour
             HandleGhostMovement();
             if (currentGhostTime <= 0f)
                 ForceReturnToBody();
+                
+            // Override crouch behavior while in ghost mode
+            // The down movement is handled in HandleGhostMovement method
+            if (Input.GetKeyDown(fpc.crouchKey) || Input.GetKeyUp(fpc.crouchKey))
+            {
+                // Prevent FirstPersonController from processing crouch action
+                // by disabling enableCrouch setting temporarily
+                fpc.enableCrouch = false;
+            }
         }
         else if (currentGhostTime < maxGhostTime)
         {
@@ -98,6 +110,10 @@ public class GhostMode : MonoBehaviour
         // save body
         bodyPosition = transform.position;
         bodyRotation = transform.rotation;
+
+        // Store original crouch setting and disable it
+        originalEnableCrouch = fpc.enableCrouch;
+        fpc.enableCrouch = false;
 
         // spawn body placeholder
         if (bodyPrefab != null)
@@ -146,6 +162,9 @@ public class GhostMode : MonoBehaviour
     {
         IsInGhostMode = false;
 
+        // Restore original crouch setting
+        fpc.enableCrouch = originalEnableCrouch;
+
         transform.SetPositionAndRotation(bodyPosition, bodyRotation);
         if (bodyInstance) Destroy(bodyInstance);
 
@@ -192,7 +211,7 @@ public class GhostMode : MonoBehaviour
         Vector3 dir = (fwd * v + right * h).normalized;
 
         if (Input.GetKey(fpc.jumpKey))   dir += Vector3.up;
-        if (Input.GetKey(fpc.crouchKey)) dir += Vector3.down;
+        if (Input.GetKey(fpc.crouchKey)) dir += Vector3.down;  // Use crouch key for descending in ghost mode
 
         rb.velocity = dir * ghostSpeed;
     }
