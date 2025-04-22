@@ -22,6 +22,16 @@ public class TitleSceneUI : MonoBehaviour
         SceneManager.LoadScene("Level2");
     }
 
+    public void OpenSceneThree()
+    {
+        SceneManager.LoadScene("Level_3");
+    }
+
+    public void OpenSceneFour()
+    {
+        // SceneManager.LoadScene("Level4");
+    }
+
     public void ExitGame()
     {
         Application.Quit();
