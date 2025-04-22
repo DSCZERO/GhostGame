@@ -17,6 +17,11 @@ public class TitleSceneUI : MonoBehaviour
         SceneManager.LoadScene("Tutorial Level");
     }
 
+    public void OpenSceneTwo()
+    {
+        SceneManager.LoadScene("Level2");
+    }
+
     public void ExitGame()
     {
         Application.Quit();

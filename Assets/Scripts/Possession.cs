@@ -54,8 +54,9 @@ public class Possession : MonoBehaviour
 
         // Parent camera to target
         playerCamera.transform.SetParent(target.transform);
-        playerCamera.transform.localPosition = Vector3.up; 
-        playerCamera.transform.localRotation = Quaternion.identity;
+        playerCamera.transform.localPosition = new Vector3(0, 2, -2);
+        playerCamera.transform.LookAt(target.transform.position + Vector3.up * 2f);
+        //playerCamera.transform.localRotation = Quaternion.identity;
 
         // Enable control on possessed object
         possessedController = target.GetComponent<PossessableController>();
@@ -68,19 +69,29 @@ public class Possession : MonoBehaviour
 
     void ReturnToPlayer()
     {
-        // Make main player body move to new position
-        playerBody.transform.position = currentBody.transform.position;
+        // Calculate a safe exit position in front of the possessed object
+        Vector3 exitOffset = currentBody.transform.forward * 2f;
+        Vector3 exitPosition = currentBody.transform.position + exitOffset;
 
-        // Re-enable player control
+        // Optionally raise the Y position slightly to prevent clipping into the ground
+        exitPosition.y += 0.5f;
+
+        // Move player body to the exit position
+        playerBody.transform.position = exitPosition;
+
+        // Optionally rotate the player to face the same direction as the possessed object
+        playerBody.transform.rotation = Quaternion.LookRotation(currentBody.transform.forward);
+
+        // Re-enable player movement
         if (playerMovementScript != null)
             playerMovementScript.enabled = true;
 
-        // Unparent and reset the camera
+        // Re-parent the camera to the player body and reset its position/rotation
         playerCamera.transform.SetParent(playerBody.transform);
-        playerCamera.transform.localPosition = Vector3.up; // Adjust based on head height
+        playerCamera.transform.localPosition = Vector3.up; // Adjust for head height
         playerCamera.transform.localRotation = Quaternion.identity;
 
-        // Disable possessed movement
+        // Disable movement on the previously possessed object
         if (possessedController != null)
             possessedController.SetPossessed(false);
 
