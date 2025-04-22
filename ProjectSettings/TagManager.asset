@@ -9,6 +9,7 @@ TagManager:
   - Fire
   - Possessable
   - NoGhostZone
+  - Telekinesis
   layers:
   - Default
   - TransparentFX
