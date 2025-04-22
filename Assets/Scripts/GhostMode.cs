@@ -13,10 +13,8 @@ public class GhostMode : MonoBehaviour
     private bool isInNoGhostZone = false;         // Tracks whether in a sacred zone
 
     [Header("Ghost Visual Effects")]
-    public float ghostAlpha = 0.5f;               // Target transparency when in ghost mode (0 = invisible, 1 = opaque)
+    public float ghostAlpha = 0.5f;               // Target transparency when in ghost mode
     public float fadeDuration = 0.5f;             // Duration of the fade effect
-    
-    // Add a reference to the ghost material for doors
     public Material doorGhostMaterial;            // The material to use for doors in ghost mode
 
     [Header("Physical Body")]
@@ -33,9 +31,8 @@ public class GhostMode : MonoBehaviour
     private Collider playerCollider;              // Player collider
     private Renderer playerRenderer;              // Player renderer
 
-    // Dictionary to store each door object and its original material
+    // Dictionary to store door materials
     private Dictionary<GameObject, Material> originalDoorMaterials = new Dictionary<GameObject, Material>();
-
 
     void Start()
     {
@@ -52,44 +49,57 @@ public class GhostMode : MonoBehaviour
 
     void Update()
     {
-        // Toggle ghost mode with ghostKey
+        // Toggle ghost mode
         if (Input.GetKeyDown(ghostKey))
         {
-            // Case 1: Not in ghost mode - try to enter ghost mode
-            if (!IsInGhostMode && currentGhostTime > 0 && !isInNoGhostZone)
-            {
-                EnterGhostMode();
-            }
-            // Case 2: In ghost mode and near body - return to body
-            else if (IsInGhostMode && IsNearBody())
-            {
-                ReturnToBody();
-            }
+            ToggleGhostMode();
         }
         
-        // Ghost mode timer and movement
+        // Update ghost mode timer and movement
         if (IsInGhostMode)
         {
-            // Decrease ghost mode time
-            currentGhostTime -= Time.deltaTime;
-            
-            // Handle ghost movement
+            UpdateGhostTimer();
             HandleGhostMovement();
-            
-            // If time runs out, force return
-            if (currentGhostTime <= 0)
-            {
-                ForceReturnToBody();
-            }
         }
         else
         {
-            // Slowly recover ghost time when not in ghost mode
-            if (currentGhostTime < maxGhostTime)
-            {
-                currentGhostTime += Time.deltaTime * 0.5f; // Recover at half the depletion rate
-                currentGhostTime = Mathf.Clamp(currentGhostTime, 0, maxGhostTime);
-            }
+            RecoverGhostTime();
+        }
+    }
+    
+    void ToggleGhostMode()
+    {
+        // Case 1: Not in ghost mode - try to enter ghost mode
+        if (!IsInGhostMode && currentGhostTime > 0 && !isInNoGhostZone)
+        {
+            EnterGhostMode();
+        }
+        // Case 2: In ghost mode and near body - return to body
+        else if (IsInGhostMode && IsNearBody())
+        {
+            ReturnToBody();
+        }
+    }
+    
+    void UpdateGhostTimer()
+    {
+        // Decrease ghost mode time
+        currentGhostTime -= Time.deltaTime;
+        
+        // If time runs out, force return
+        if (currentGhostTime <= 0)
+        {
+            ForceReturnToBody();
+        }
+    }
+    
+    void RecoverGhostTime()
+    {
+        // Slowly recover ghost time when not in ghost mode
+        if (currentGhostTime < maxGhostTime)
+        {
+            currentGhostTime += Time.deltaTime * 0.5f; // Recover at half the depletion rate
+            currentGhostTime = Mathf.Clamp(currentGhostTime, 0, maxGhostTime);
         }
     }
     
@@ -97,56 +107,35 @@ public class GhostMode : MonoBehaviour
     {
         IsInGhostMode = true;
         
+        // Update FPC to prevent crouch behavior in ghost mode
+        if (fpc != null)
+        {
+            fpc.isInGhostMode = true;
+        }
+        
         // Save body position and rotation
         bodyPosition = transform.position;
         bodyRotation = transform.rotation;
         
         // Create body instance
-        if (bodyPrefab != null)
-        {
-            bodyInstance = Instantiate(bodyPrefab, bodyPosition, bodyRotation);
-        }
-        else
-        {
-            // If no body prefab, create a simple placeholder
-            bodyInstance = GameObject.CreatePrimitive(PrimitiveType.Capsule);
-            bodyInstance.transform.position = bodyPosition;
-            bodyInstance.transform.rotation = bodyRotation;
-            bodyInstance.transform.localScale = transform.localScale;
-            
-            // Remove capsule collider to avoid physics conflicts
-            Collider bodyCollider = bodyInstance.GetComponent<Collider>();
-            if (bodyCollider)
-            {
-                bodyCollider.enabled = false;
-            }
-        }
+        CreateBodyInstance();
         
         // Modify player physics properties
-        rb.useGravity = false;          // Disable gravity
-        rb.velocity = Vector3.zero;     // Clear velocity
+        rb.useGravity = false;
+        rb.velocity = Vector3.zero;
         
         // Change player to Ghost layer
         gameObject.layer = LayerMask.NameToLayer("Ghost");
-        // Ignore collisions only with Door objects.
+        
+        // Ignore collisions only with Door objects
         Physics.IgnoreLayerCollision(
             LayerMask.NameToLayer("Ghost"), 
             LayerMask.NameToLayer("Door"), 
             true
         );
         
-        // Keep playerCollider enabled so that collisions with walls/floors remain active
-        
-        // Disable shadow casting for main and child renderers
-        if (playerRenderer)
-        {
-            playerRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
-        }
-        Renderer[] childRenderers = GetComponentsInChildren<Renderer>();
-        foreach (Renderer r in childRenderers)
-        {
-            r.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
-        }
+        // Disable shadow casting
+        SetShadowCasting(UnityEngine.Rendering.ShadowCastingMode.Off);
         
         // Start fade effect to ghostAlpha
         StartCoroutine(FadeToAlpha(ghostAlpha));
@@ -158,6 +147,12 @@ public class GhostMode : MonoBehaviour
     void ReturnToBody()
     {
         IsInGhostMode = false;
+        
+        // Update FPC to allow crouch behavior again
+        if (fpc != null)
+        {
+            fpc.isInGhostMode = false;
+        }
         
         // Move player back to body position
         transform.position = bodyPosition;
@@ -181,35 +176,57 @@ public class GhostMode : MonoBehaviour
             false
         );
         
-        // Re-enable player collider
-        if (playerCollider)
-        {
-            playerCollider.enabled = true;
-        }
+        // Restore shadow casting
+        SetShadowCasting(UnityEngine.Rendering.ShadowCastingMode.On);
         
-        // Restore shadow casting for main and child renderers
-        if (playerRenderer)
-        {
-            playerRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.On;
-        }
-        Renderer[] childRenderers = GetComponentsInChildren<Renderer>();
-        foreach (Renderer r in childRenderers)
-        {
-            r.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.On;
-        }
-        
-        // Start fade effect back to full opacity (alpha 1)
+        // Start fade effect back to full opacity
         StartCoroutine(FadeToAlpha(1f));
         
         // Revert all doors to their original materials
         RevertDoorMaterials();
     }
     
-    // Force return to body when ghost time runs out
     void ForceReturnToBody()
     {
         ReturnToBody();
         Debug.Log("Ghost time depleted, forced return to body");
+    }
+    
+    void CreateBodyInstance()
+    {
+        if (bodyPrefab != null)
+        {
+            bodyInstance = Instantiate(bodyPrefab, bodyPosition, bodyRotation);
+        }
+        else
+        {
+            // If no body prefab, create a simple placeholder
+            bodyInstance = GameObject.CreatePrimitive(PrimitiveType.Capsule);
+            bodyInstance.transform.position = bodyPosition;
+            bodyInstance.transform.rotation = bodyRotation;
+            bodyInstance.transform.localScale = transform.localScale;
+            
+            // Remove capsule collider to avoid physics conflicts
+            Collider bodyCollider = bodyInstance.GetComponent<Collider>();
+            if (bodyCollider)
+            {
+                bodyCollider.enabled = false;
+            }
+        }
+    }
+    
+    void SetShadowCasting(UnityEngine.Rendering.ShadowCastingMode mode)
+    {
+        if (playerRenderer)
+        {
+            playerRenderer.shadowCastingMode = mode;
+        }
+        
+        Renderer[] childRenderers = GetComponentsInChildren<Renderer>();
+        foreach (Renderer r in childRenderers)
+        {
+            r.shadowCastingMode = mode;
+        }
     }
     
     void HandleGhostMovement()
@@ -218,19 +235,26 @@ public class GhostMode : MonoBehaviour
         float horizontal = Input.GetAxis("Horizontal");
         float vertical = Input.GetAxis("Vertical");
         
-        // Calculate movement vector based on camera orientation
+        // Calculate movement direction based on camera orientation
         Vector3 forward = playerCamera.transform.forward;
         Vector3 right = playerCamera.transform.right;
+        
+        // Keep movement on horizontal plane
+        forward.y = 0;
         right.y = 0;
+        forward.Normalize();
         right.Normalize();
         
         Vector3 moveDirection = (forward * vertical + right * horizontal).normalized;
         
-        // Add up/down movement using jump/crouch
+        // Add vertical movement using jump/crouch keys
+        // Jump key to move up
         if (Input.GetKey(fpc.jumpKey))
         {
             moveDirection += Vector3.up;
         }
+        
+        // Crouch key to move down - this doesn't trigger actual crouch animation
         if (Input.GetKey(fpc.crouchKey))
         {
             moveDirection += Vector3.down;
@@ -247,7 +271,7 @@ public class GhostMode : MonoBehaviour
         return distanceToBody <= returnDistance;
     }
     
-    // Coroutine for smoothly fading all renderers to a target alpha value
+    // Coroutine for smoothly fading all renderers to a target alpha
     IEnumerator FadeToAlpha(float targetAlpha)
     {
         // Gather all renderers (main and children)
@@ -265,37 +289,39 @@ public class GhostMode : MonoBehaviour
             originalColors[rend] = rend.material.color;
         }
         
+        // Gradually fade to target alpha
         float elapsedTime = 0f;
         while (elapsedTime < fadeDuration)
         {
             elapsedTime += Time.deltaTime;
             float blend = Mathf.Clamp01(elapsedTime / fadeDuration);
+            
             foreach (Renderer rend in renderers)
             {
-                Color originalColor = originalColors[rend];
-                float newAlpha = Mathf.Lerp(originalColor.a, targetAlpha, blend);
-                Color newColor = new Color(
-                    originalColor.r, 
-                    originalColor.g, 
-                    originalColor.b, 
-                    newAlpha
-                );
-                rend.material.color = newColor;
+                if (rend != null && originalColors.ContainsKey(rend))
+                {
+                    Color originalColor = originalColors[rend];
+                    float newAlpha = Mathf.Lerp(originalColor.a, targetAlpha, blend);
+                    Color newColor = new Color(
+                        originalColor.r, 
+                        originalColor.g, 
+                        originalColor.b, 
+                        newAlpha
+                    );
+                    rend.material.color = newColor;
+                }
             }
             yield return null;
         }
     }
     
-    /// <summary>
-    /// Find all objects on the "Door" layer, store their original material,
-    /// and assign the doorGhostMaterial.
-    /// </summary>
+    // Find all objects on the "Door" layer and apply ghost material
     void ApplyGhostDoorMaterial()
     {
         // Clear the dictionary before applying new ghost materials
         originalDoorMaterials.Clear();
 
-        // Find all objects in the scene
+        // Find all door objects in the scene
         GameObject[] allObjects = FindObjectsOfType<GameObject>();
         
         foreach (GameObject obj in allObjects)
@@ -314,9 +340,7 @@ public class GhostMode : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Revert all door objects to their original materials.
-    /// </summary>
+    // Revert all door objects to their original materials
     void RevertDoorMaterials()
     {
         foreach (var kvp in originalDoorMaterials)
@@ -338,6 +362,7 @@ public class GhostMode : MonoBehaviour
         originalDoorMaterials.Clear();
     }
 
+    // Trigger handlers for NoGhostZones
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("NoGhostZone"))

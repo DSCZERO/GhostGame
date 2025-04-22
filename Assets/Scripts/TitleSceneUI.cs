@@ -5,10 +5,11 @@ using UnityEngine.SceneManagement;
 
 public class TitleSceneUI : MonoBehaviour
 {
-    // Start is called before the first frame update
     void Start()
     {
-        
+        // Ensure cursor is visible and unlocked in the title scene
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
     }
 
     public void OpenScene()
@@ -24,5 +25,10 @@ public class TitleSceneUI : MonoBehaviour
     public void ExitGame()
     {
         Application.Quit();
+        
+        // Provide feedback when testing in Unity Editor
+        #if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+        #endif
     }
 }
