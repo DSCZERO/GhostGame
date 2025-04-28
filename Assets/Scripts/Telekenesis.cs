@@ -86,14 +86,27 @@ public class Telekinesis : MonoBehaviour
 
     void MoveObjectWithInput()
     {
-        Vector3 dir = Vector3.zero;
-        if (Input.GetKey(KeyCode.UpArrow))    dir += Vector3.forward;
-        if (Input.GetKey(KeyCode.DownArrow))  dir += Vector3.back;
-        if (Input.GetKey(KeyCode.LeftArrow))  dir += Vector3.left;
-        if (Input.GetKey(KeyCode.RightArrow)) dir += Vector3.right;
+        // Get the camera’s forward and right vectors, flattened to the XZ plane
+        Vector3 camForward = playerCamera.transform.forward;
+        camForward.y = 0;
+        camForward.Normalize();
 
-        targetedObject.position += dir * moveSpeed * Time.deltaTime;
+        Vector3 camRight = playerCamera.transform.right;
+        camRight.y = 0;
+        camRight.Normalize();
+
+        // Build your movement direction based on arrow keys
+        Vector3 dir = Vector3.zero;
+        if (Input.GetKey(KeyCode.UpArrow)) dir += camForward;
+        if (Input.GetKey(KeyCode.DownArrow)) dir -= camForward;
+        if (Input.GetKey(KeyCode.RightArrow)) dir += camRight;
+        if (Input.GetKey(KeyCode.LeftArrow)) dir -= camRight;
+
+        // Apply movement
+        if (dir != Vector3.zero)
+            targetedObject.position += dir * moveSpeed * Time.deltaTime;
     }
+
 
     void ReleaseObject()
     {

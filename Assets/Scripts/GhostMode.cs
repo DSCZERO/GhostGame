@@ -19,7 +19,7 @@ public class GhostMode : MonoBehaviour
     public Material doorGhostMaterial;
 
     [Header("Screen Feedback")]
-    [Tooltip("Full‑screen UI Image (covering the screen)")]
+    [Tooltip("Full-screen UI Image (covering the screen)")]
     public Image screenOverlay;
     [Tooltip("Color to flash on entry (e.g. a pale white)")]
     public Color enterFadeColor = Color.white;
@@ -47,7 +47,7 @@ public class GhostMode : MonoBehaviour
     private Collider playerCollider;
     private Renderer playerRenderer;
     private Dictionary<GameObject, Material> originalDoorMaterials = new Dictionary<GameObject, Material>();
-    
+
     // Store the original crouching settings
     private bool originalEnableCrouch;
 
@@ -87,15 +87,10 @@ public class GhostMode : MonoBehaviour
             HandleGhostMovement();
             if (currentGhostTime <= 0f)
                 ForceReturnToBody();
-                
-            // Override crouch behavior while in ghost mode
-            // The down movement is handled in HandleGhostMovement method
+
+            // Temporarily disable crouch in the FPC so it doesn't fight your ghost controls
             if (Input.GetKeyDown(fpc.crouchKey) || Input.GetKeyUp(fpc.crouchKey))
-            {
-                // Prevent FirstPersonController from processing crouch action
-                // by disabling enableCrouch setting temporarily
                 fpc.enableCrouch = false;
-            }
         }
         else if (currentGhostTime < maxGhostTime)
         {
@@ -106,6 +101,13 @@ public class GhostMode : MonoBehaviour
     void EnterGhostMode()
     {
         IsInGhostMode = true;
+
+        // --- disable the normal movement controller ---
+        if (fpc != null)
+        {
+            fpc.allowMovement = false;   // mute WASD/physics
+            fpc.cameraCanMove = true;    // keep mouse‐look alive
+        }
 
         // save body
         bodyPosition = transform.position;
@@ -162,6 +164,11 @@ public class GhostMode : MonoBehaviour
     {
         IsInGhostMode = false;
 
+        if (fpc != null)
+        {
+            fpc.allowMovement = true;
+        }
+
         // Restore original crouch setting
         fpc.enableCrouch = originalEnableCrouch;
 
@@ -177,7 +184,7 @@ public class GhostMode : MonoBehaviour
             false
         );
 
-        if (playerCollider) 
+        if (playerCollider)
             playerCollider.enabled = true;
         if (playerRenderer)
             playerRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.On;
@@ -195,6 +202,7 @@ public class GhostMode : MonoBehaviour
         if (audioSource != null && exitGhostClip != null)
             audioSource.PlayOneShot(exitGhostClip);
     }
+
     void ForceReturnToBody()
     {
         ReturnToBody();
@@ -205,13 +213,27 @@ public class GhostMode : MonoBehaviour
     {
         float h = Input.GetAxis("Horizontal");
         float v = Input.GetAxis("Vertical");
+
+        // flatten camera vectors
         Vector3 fwd = playerCamera.transform.forward;
+        fwd.y = 0f; fwd.Normalize();
         Vector3 right = playerCamera.transform.right;
         right.y = 0f; right.Normalize();
+
+        // build move direction
         Vector3 dir = (fwd * v + right * h).normalized;
 
-        if (Input.GetKey(fpc.jumpKey))   dir += Vector3.up;
-        if (Input.GetKey(fpc.crouchKey)) dir += Vector3.down;  // Use crouch key for descending in ghost mode
+        // ascend with jump
+        if (Input.GetKey(fpc.jumpKey))
+            dir += Vector3.up;
+
+        // descend with crouch OR Ctrl
+        if (Input.GetKey(fpc.crouchKey)
+            || Input.GetKey(KeyCode.LeftControl)
+            || Input.GetKey(KeyCode.RightControl))
+        {
+            dir += Vector3.down;
+        }
 
         rb.velocity = dir * ghostSpeed;
     }
@@ -298,7 +320,6 @@ public class GhostMode : MonoBehaviour
         originalDoorMaterials.Clear();
     }
 
-    // Trigger handlers for NoGhostZones
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("NoGhostZone"))
