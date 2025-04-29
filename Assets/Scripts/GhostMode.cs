@@ -83,6 +83,7 @@ public class GhostMode : MonoBehaviour
                 EnterGhostMode();
             else if (IsInGhostMode && IsNearBody())
                 ReturnToBody();
+                HideOtherGhosts();
         }
 
         if (IsInGhostMode)
@@ -107,6 +108,10 @@ public class GhostMode : MonoBehaviour
     void ShowOtherGhosts()
     {
         ghostNPC.SetActive(true);   
+    }
+    void HideOtherGhosts()
+    {
+        ghostNPC.SetActive(false);   
     }
 
     void EnterGhostMode()
