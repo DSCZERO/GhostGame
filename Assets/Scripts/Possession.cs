@@ -12,10 +12,24 @@ public class Possession : MonoBehaviour
     private GameObject currentBody;
     private PossessableController possessedController;
     private bool isPossessing = false;
+    
+    // Store renderers attached to the player body to hide them during possession
+    private Renderer[] playerRenderers;
+    private bool[] renderersEnabledState;
+    
+    // Store colliders attached to the player body to disable them during possession
+    private Collider[] playerColliders;
 
     void Start()
     {
         currentBody = playerBody;
+        
+        // Get all renderers from the player's body and children
+        playerRenderers = playerBody.GetComponentsInChildren<Renderer>();
+        renderersEnabledState = new bool[playerRenderers.Length];
+        
+        // Get all colliders from the player's body and children
+        playerColliders = playerBody.GetComponentsInChildren<Collider>();
     }
 
     void Update()
@@ -57,6 +71,20 @@ public class Possession : MonoBehaviour
         playerCamera.transform.localPosition = new Vector3(0, 2, -2);
         playerCamera.transform.LookAt(target.transform.position + Vector3.up * 2f);
         //playerCamera.transform.localRotation = Quaternion.identity;
+        
+        // Hide the player's renderers to prevent seeing yourself while possessing
+        for (int i = 0; i < playerRenderers.Length; i++)
+        {
+            // Store original state before disabling
+            renderersEnabledState[i] = playerRenderers[i].enabled;
+            playerRenderers[i].enabled = false;
+        }
+        
+        // Disable player colliders to prevent physics interactions
+        foreach (var collider in playerColliders)
+        {
+            collider.enabled = false;
+        }
 
         // Enable control on possessed object
         possessedController = target.GetComponent<PossessableController>();
@@ -90,6 +118,18 @@ public class Possession : MonoBehaviour
         playerCamera.transform.SetParent(playerBody.transform);
         playerCamera.transform.localPosition = Vector3.up; // Adjust for head height
         playerCamera.transform.localRotation = Quaternion.identity;
+        
+        // Restore the player's renderer visibility states
+        for (int i = 0; i < playerRenderers.Length; i++)
+        {
+            playerRenderers[i].enabled = renderersEnabledState[i];
+        }
+        
+        // Re-enable player colliders
+        foreach (var collider in playerColliders)
+        {
+            collider.enabled = true;
+        }
 
         // Disable movement on the previously possessed object
         if (possessedController != null)
