@@ -243,10 +243,8 @@ public class GhostMode : MonoBehaviour
         if (Input.GetKey(fpc.jumpKey))
             dir += Vector3.up;
 
-        // descend with crouch OR Ctrl
-        if (Input.GetKey(fpc.crouchKey)
-            || Input.GetKey(KeyCode.LeftControl)
-            || Input.GetKey(KeyCode.RightControl))
+        // descend with crouch key only - simplified control
+        if (Input.GetKey(fpc.crouchKey))
         {
             dir += Vector3.down;
         }
