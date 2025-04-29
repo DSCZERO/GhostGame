@@ -24,7 +24,7 @@ public class TitleSceneUI : MonoBehaviour
 
     public void OpenSceneThree()
     {
-        SceneManager.LoadScene("Level_3");
+        SceneManager.LoadScene("Level3");
     }
 
     public void OpenSceneFour()
