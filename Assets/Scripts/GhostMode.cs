@@ -47,6 +47,7 @@ public class GhostMode : MonoBehaviour
     private Collider playerCollider;
     private Renderer playerRenderer;
     private Dictionary<GameObject, Material> originalDoorMaterials = new Dictionary<GameObject, Material>();
+    private GameObject ghostNPC;
 
     // Store the original crouching settings
     private bool originalEnableCrouch;
@@ -69,6 +70,9 @@ public class GhostMode : MonoBehaviour
 
         if (audioSource == null)
             audioSource = GetComponent<AudioSource>();
+
+        ghostNPC = GameObject.FindGameObjectWithTag("Ghost");
+        ghostNPC.SetActive(false);
     }
 
     void Update()
@@ -83,6 +87,7 @@ public class GhostMode : MonoBehaviour
 
         if (IsInGhostMode)
         {
+            ShowOtherGhosts();
             currentGhostTime -= Time.deltaTime;
             HandleGhostMovement();
             if (currentGhostTime <= 0f)
@@ -91,11 +96,17 @@ public class GhostMode : MonoBehaviour
             // Temporarily disable crouch in the FPC so it doesn't fight your ghost controls
             if (Input.GetKeyDown(fpc.crouchKey) || Input.GetKeyUp(fpc.crouchKey))
                 fpc.enableCrouch = false;
+
         }
         else if (currentGhostTime < maxGhostTime)
         {
             currentGhostTime = Mathf.Clamp(currentGhostTime + Time.deltaTime * 0.5f, 0f, maxGhostTime);
         }
+    }
+
+    void ShowOtherGhosts()
+    {
+        ghostNPC.SetActive(true);   
     }
 
     void EnterGhostMode()

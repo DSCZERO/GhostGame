@@ -10,6 +10,7 @@ TagManager:
   - Possessable
   - NoGhostZone
   - Telekinesis
+  - Ghost
   layers:
   - Default
   - TransparentFX
