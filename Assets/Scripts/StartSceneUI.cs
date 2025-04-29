@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class TitleSceneUI : MonoBehaviour
+public class StartSceneUI : MonoBehaviour
 {
     void Start()
     {
-        // Ensure cursor is visible and unlocked in the title scene
+        // Ensure cursor is visible and unlocked in the start scene
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
     }
