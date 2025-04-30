@@ -47,7 +47,6 @@ public class GhostMode : MonoBehaviour
     private Collider playerCollider;
     private Renderer playerRenderer;
     private Dictionary<GameObject, Material> originalDoorMaterials = new Dictionary<GameObject, Material>();
-    private GameObject ghostNPC;
 
     // Store the original crouching settings
     private bool originalEnableCrouch;
@@ -70,72 +69,68 @@ public class GhostMode : MonoBehaviour
 
         if (audioSource == null)
             audioSource = GetComponent<AudioSource>();
-
-        ghostNPC = GameObject.FindGameObjectWithTag("Ghost");
-        ghostNPC.SetActive(false);
     }
 
     void Update()
     {
+        // Toggle ghost mode
         if (Input.GetKeyDown(ghostKey))
         {
-            if (!IsInGhostMode && currentGhostTime > 0 && !isInNoGhostZone)
+            if (!IsInGhostMode && currentGhostTime > 0f && !isInNoGhostZone)
+            {
                 EnterGhostMode();
+            }
             else if (IsInGhostMode && IsNearBody())
+            {
                 ReturnToBody();
-                HideOtherGhosts();
+            }
         }
 
         if (IsInGhostMode)
         {
-            ShowOtherGhosts();
+            // drain timer
             currentGhostTime -= Time.deltaTime;
             HandleGhostMovement();
+
+            // force-return if time's up
             if (currentGhostTime <= 0f)
                 ForceReturnToBody();
 
-            // Temporarily disable crouch in the FPC so it doesn't fight your ghost controls
+            // ensure crouch stays disabled while ghosted
             if (Input.GetKeyDown(fpc.crouchKey) || Input.GetKeyUp(fpc.crouchKey))
                 fpc.enableCrouch = false;
-
         }
         else if (currentGhostTime < maxGhostTime)
         {
+            // recharge
             currentGhostTime = Mathf.Clamp(currentGhostTime + Time.deltaTime * 0.5f, 0f, maxGhostTime);
         }
-    }
-
-    void ShowOtherGhosts()
-    {
-        ghostNPC.SetActive(true);   
-    }
-    void HideOtherGhosts()
-    {
-        ghostNPC.SetActive(false);   
     }
 
     void EnterGhostMode()
     {
         IsInGhostMode = true;
 
-        // --- disable the normal movement controller ---
+        // disable your regular controller, keep mouselook
         if (fpc != null)
         {
-            fpc.allowMovement = false;   // mute WASD/physics
-            fpc.cameraCanMove = true;    // keep mouse‐look alive
+            fpc.allowMovement = false;
+            fpc.cameraCanMove = true;
         }
 
-        // save body
+        // save body transform
         bodyPosition = transform.position;
         bodyRotation = transform.rotation;
 
-        // Store original crouch setting and disable it
+        // disable crouch
         originalEnableCrouch = fpc.enableCrouch;
         fpc.enableCrouch = false;
 
-        // spawn body placeholder
+        // spawn a dummy body
         if (bodyPrefab != null)
+        {
             bodyInstance = Instantiate(bodyPrefab, bodyPosition, bodyRotation);
+        }
         else
         {
             bodyInstance = GameObject.CreatePrimitive(PrimitiveType.Capsule);
@@ -145,7 +140,7 @@ public class GhostMode : MonoBehaviour
             if (col) col.enabled = false;
         }
 
-        // physics + collisions
+        // turn off gravity & collisions with doors
         rb.useGravity = false;
         rb.velocity = Vector3.zero;
         gameObject.layer = LayerMask.NameToLayer("Ghost");
@@ -155,23 +150,23 @@ public class GhostMode : MonoBehaviour
             true
         );
 
-        // shadows off
+        // turn off shadows
         if (playerRenderer)
             playerRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
         foreach (var r in GetComponentsInChildren<Renderer>())
             r.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
 
-        // fade body
+        // fade the player mesh
         StartCoroutine(FadeToAlpha(ghostAlpha));
 
-        // recolor doors
+        // recolor all doors
         ApplyGhostDoorMaterial();
 
         // screen flash
         if (screenOverlay != null)
             StartCoroutine(ScreenFlash(enterFadeColor));
 
-        // play enter sound
+        // sound
         if (audioSource != null && enterGhostClip != null)
             audioSource.PlayOneShot(enterGhostClip);
     }
@@ -181,16 +176,16 @@ public class GhostMode : MonoBehaviour
         IsInGhostMode = false;
 
         if (fpc != null)
-        {
             fpc.allowMovement = true;
-        }
 
-        // Restore original crouch setting
+        // restore crouch
         fpc.enableCrouch = originalEnableCrouch;
 
+        // teleport back & destroy dummy
         transform.SetPositionAndRotation(bodyPosition, bodyRotation);
         if (bodyInstance) Destroy(bodyInstance);
 
+        // restore physics & collisions
         rb.useGravity = true;
         rb.velocity = Vector3.zero;
         gameObject.layer = LayerMask.NameToLayer("Default");
@@ -200,21 +195,21 @@ public class GhostMode : MonoBehaviour
             false
         );
 
-        if (playerCollider)
-            playerCollider.enabled = true;
-        if (playerRenderer)
-            playerRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.On;
+        // restore shadows
+        if (playerCollider)  playerCollider.enabled = true;
+        if (playerRenderer) playerRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.On;
         foreach (var r in GetComponentsInChildren<Renderer>())
             r.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.On;
 
+        // fade back in
         StartCoroutine(FadeToAlpha(1f));
+
+        // revert door colors
         RevertDoorMaterials();
 
-        // screen flash
+        // screen flash & sound
         if (screenOverlay != null)
             StartCoroutine(ScreenFlash(exitFadeColor));
-
-        // play exit sound
         if (audioSource != null && exitGhostClip != null)
             audioSource.PlayOneShot(exitGhostClip);
     }
@@ -230,24 +225,18 @@ public class GhostMode : MonoBehaviour
         float h = Input.GetAxis("Horizontal");
         float v = Input.GetAxis("Vertical");
 
-        // flatten camera vectors
+        // flatten camera basis
         Vector3 fwd = playerCamera.transform.forward;
         fwd.y = 0f; fwd.Normalize();
         Vector3 right = playerCamera.transform.right;
         right.y = 0f; right.Normalize();
 
-        // build move direction
         Vector3 dir = (fwd * v + right * h).normalized;
 
-        // ascend with jump
         if (Input.GetKey(fpc.jumpKey))
             dir += Vector3.up;
-
-        // descend with crouch key only - simplified control
         if (Input.GetKey(fpc.crouchKey))
-        {
             dir += Vector3.down;
-        }
 
         rb.velocity = dir * ghostSpeed;
     }
