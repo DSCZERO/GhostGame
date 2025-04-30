@@ -19,12 +19,22 @@ public class DoorLock : MonoBehaviour
     [Tooltip("Max distance you can click from")]
     public float interactRange = 5f;
 
+    // Prevent opening when player is in ghost form
+    private GhostMode ghostMode;
+
     private bool doorOpened = false;
     private int openBoolHash;
 
     private void Awake()
     {
         openBoolHash = Animator.StringToHash(openBoolName);
+
+        // Find GhostMode on the player via the main camera
+        if (Camera.main != null)
+            ghostMode = Camera.main.GetComponentInParent<GhostMode>();
+
+        if (ghostMode == null)
+            Debug.LogWarning("[DoorLock] Could not find GhostMode on player; ghost check disabled.");
 
         // If not manually assigned, try to get the Animator component
         if (doorAnimator == null && TryGetComponent<Animator>(out var anim))
@@ -42,6 +52,10 @@ public class DoorLock : MonoBehaviour
     private void Update()
     {
         if (doorOpened) return;
+
+        // Do not allow opening while in ghost mode
+        if (ghostMode != null && ghostMode.IsInGhostMode)
+            return;
 
         if (Input.GetMouseButtonDown(0))
         {

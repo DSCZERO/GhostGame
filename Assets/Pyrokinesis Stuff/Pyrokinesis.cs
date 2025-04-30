@@ -5,7 +5,7 @@ using UnityEngine.UI;        // ← for RawImage
 
 public class Pyrokinesis : MonoBehaviour
 {
-    // This boolean tracks whether the player has "heat" stored.
+    // Tracks whether the player has "heat" stored.
     private bool heat = false;
 
     // Maximum distance for the raycast to check for objects.
@@ -19,53 +19,68 @@ public class Pyrokinesis : MonoBehaviour
     [Header("UI")]
     public RawImage heatIndicator;     // drag your RawImage here
 
+    // Reference to GhostMode to restrict use
+    private GhostMode ghostMode;
+
+    void Awake()
+    {
+        // Locate the player's GhostMode via the main camera
+        if (Camera.main != null)
+            ghostMode = Camera.main.GetComponentInParent<GhostMode>();
+
+        if (ghostMode == null)
+            Debug.LogWarning("[Pyrokinesis] GhostMode not found on player; pyrokinesis disabled.");
+    }
+
     void Start()
     {
-        // start with “no heat” indicator
+        // begin with "no heat" indicator
         if (heatIndicator != null)
             heatIndicator.color = Color.black;
     }
 
     void Update()
     {
-        // when player presses E…
+        // only allow when in ghost form
+        if (ghostMode == null || !ghostMode.IsInGhostMode)
+            return;
+
         if (Input.GetKeyDown(KeyCode.E))
         {
             // cast from center of screen
             Ray ray = Camera.main.ScreenPointToRay(
-                new Vector3(Screen.width / 2, Screen.height / 2, 0)
+                new Vector3(Screen.width / 2f, Screen.height / 2f, 0f)
             );
-            RaycastHit hit;
-
-            if (Physics.Raycast(ray, out hit, rayDistance))
+            if (Physics.Raycast(ray, out RaycastHit hit, rayDistance))
             {
-                // if we hit a Fire object and we don't already have heat…
+                // pick up heat from a Fire-tagged object
                 if (hit.transform.CompareTag("Fire") && !heat)
                 {
-                    // turn it white
                     var rend = hit.transform.GetComponent<Renderer>();
                     if (rend != null)
                         rend.material.color = Color.white;
 
-                    // store heat
                     heat = true;
 
-                    // play store‐heat sound
+                    // play store-heat sound
                     if (audioSource != null && storeHeatClip != null)
                         audioSource.PlayOneShot(storeHeatClip);
 
                     // update UI
                     if (heatIndicator != null)
                         heatIndicator.color = Color.white;
+
+                    // prevent re-collection by untagging
+                    hit.transform.tag = "Untagged";
                 }
-                // else if we have heat and hit something flammable…
+                // consume heat on flammable-layer objects
                 else if (heat && hit.transform.gameObject.layer == LayerMask.NameToLayer("Flammable"))
                 {
-                    // destroy it
+                    // extinguish/destroy
                     Destroy(hit.transform.gameObject);
                     heat = false;
 
-                    // play use‐heat sound
+                    // play use-heat sound
                     if (audioSource != null && useHeatClip != null)
                         audioSource.PlayOneShot(useHeatClip);
 
