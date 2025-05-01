@@ -19,7 +19,6 @@ GameObject:
   - component: {fileID: 1788835171312251159}
   - component: {fileID: 2553508774221130120}
   - component: {fileID: 8888395947422099824}
-  - component: {fileID: 2394690257512549596}
   - component: {fileID: 8601727420939637089}
   m_Layer: 0
   m_Name: FirstPersonController
@@ -221,7 +220,7 @@ MonoBehaviour:
   returnDistance: 1.5
   ghostAlpha: 0.5
   fadeDuration: 0.5
-  doorGhostMaterial: {fileID: 2100000, guid: 5fc0890bf0bee7947a876f6fe7243d2f, type: 2}
+  doorGhostMaterial: {fileID: 2100000, guid: 230cbd4a1a79b2840ab00fbe962d2c7e, type: 2}
   screenOverlay: {fileID: 0}
   enterFadeColor: {r: 1, g: 1, b: 1, a: 1}
   exitFadeColor: {r: 0, g: 0, b: 0, a: 1}
@@ -247,6 +246,8 @@ MonoBehaviour:
   storeHeatClip: {fileID: 8300000, guid: 179476f5ba898b04a9f6c425790047b8, type: 3}
   useHeatClip: {fileID: 8300000, guid: 179476f5ba898b04a9f6c425790047b8, type: 3}
   heatIndicator: {fileID: 0}
+  interactUI: {fileID: 0}
+  flammableGhostMaterial: {fileID: 2100000, guid: 20e8446c778836f4d8db04fceff643d7, type: 2}
 --- !u!114 &1788835171312251159
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -379,20 +380,6 @@ MonoBehaviour:
   scriptsToDisable:
   - {fileID: 2672349002465312857}
   - {fileID: 4459864850019384740}
---- !u!114 &2394690257512549596
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4459864850019384750}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e2146136c46902a47a33b339c4081761, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ghost1: {fileID: 0}
-  speed: 5
 --- !u!114 &8601727420939637089
 MonoBehaviour:
   m_ObjectHideFlags: 0

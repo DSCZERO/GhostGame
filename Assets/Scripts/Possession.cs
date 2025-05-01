@@ -1,90 +1,122 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class Possession : MonoBehaviour
 {
+    [Header("References")]
+    [Tooltip("Your main camera")]
     public Camera playerCamera;
+    [Tooltip("How far you can target for possession")]
     public float interactRange = 5f;
+    [Tooltip("The player character GameObject")]
     public GameObject playerBody;
+    [Tooltip("Your player's movement script to disable while possessing")]
     public MonoBehaviour playerMovementScript;
+    [Tooltip("UI element to show when hovering over a possessable")]
+    public GameObject hoverUI;
 
+    // Internals
     private GameObject currentBody;
     private PossessableController possessedController;
     private bool isPossessing = false;
-    
-    // Store renderers attached to the player body to hide them during possession
+
+    // Player-body components (to hide/disable during possession)
     private Renderer[] playerRenderers;
     private bool[] renderersEnabledState;
-    
-    // Store colliders attached to the player body to disable them during possession
     private Collider[] playerColliders;
+
+    // Saved return spot
+    private Vector3 savedPosition;
 
     void Start()
     {
         currentBody = playerBody;
-        
-        // Get all renderers from the player's body and children
+
+        // Cache renderers + their initial enabled state
         playerRenderers = playerBody.GetComponentsInChildren<Renderer>();
         renderersEnabledState = new bool[playerRenderers.Length];
-        
-        // Get all colliders from the player's body and children
+        for (int i = 0; i < playerRenderers.Length; i++)
+            renderersEnabledState[i] = playerRenderers[i].enabled;
+
+        // Cache colliders
         playerColliders = playerBody.GetComponentsInChildren<Collider>();
+
+        // Hide hover UI at start
+        if (hoverUI != null)
+            hoverUI.SetActive(false);
+
+        // Lock cursor initially
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
     }
 
     void Update()
     {
+        UpdateHoverUI();
+
         if (Input.GetKeyDown(KeyCode.T))
         {
             if (!isPossessing)
-            {
                 TryPossess();
-            }
             else
-            {
                 ReturnToPlayer();
-            }
         }
     }
 
-    void TryPossess()
+    // Show/hide hoverUI when pointing at a Possessable (only when not currently possessing)
+    private void UpdateHoverUI()
+    {
+        if (hoverUI == null || playerCamera == null)
+            return;
+
+        if (isPossessing)
+        {
+            hoverUI.SetActive(false);
+            return;
+        }
+
+        Ray ray = new Ray(playerCamera.transform.position, playerCamera.transform.forward);
+        if (Physics.Raycast(ray, out RaycastHit hit, interactRange) &&
+            hit.collider.CompareTag("Possessable"))
+        {
+            hoverUI.SetActive(true);
+        }
+        else
+        {
+            hoverUI.SetActive(false);
+        }
+    }
+
+    private void TryPossess()
     {
         Ray ray = new Ray(playerCamera.transform.position, playerCamera.transform.forward);
-        if (Physics.Raycast(ray, out RaycastHit hit, interactRange))
+        if (Physics.Raycast(ray, out RaycastHit hit, interactRange) &&
+            hit.collider.CompareTag("Possessable"))
         {
-            if (hit.collider.CompareTag("Possessable"))
-            {
-                GameObject target = hit.collider.gameObject;
-                Possess(target);
-            }
+            // Save current player-body position
+            savedPosition = playerBody.transform.position;
+            Possess(hit.collider.gameObject);
         }
     }
 
-    void Possess(GameObject target)
+    private void Possess(GameObject target)
     {
-        // Disable player control
+        // Disable player movement
         if (playerMovementScript != null)
             playerMovementScript.enabled = false;
 
-        // Parent camera to target
+        // Hide the player's renderers
+        for (int i = 0; i < playerRenderers.Length; i++)
+            playerRenderers[i].enabled = false;
+
+        // Disable player colliders
+        foreach (var col in playerColliders)
+            col.enabled = false;
+
+        // Parent camera to target and position it
         playerCamera.transform.SetParent(target.transform);
         playerCamera.transform.localPosition = new Vector3(0, 2, -2);
         playerCamera.transform.LookAt(target.transform.position + Vector3.up * 2f);
-        //playerCamera.transform.localRotation = Quaternion.identity;
-        
-        // Hide the player's renderers to prevent seeing yourself while possessing
-        for (int i = 0; i < playerRenderers.Length; i++)
-        {
-            // Store original state before disabling
-            renderersEnabledState[i] = playerRenderers[i].enabled;
-            playerRenderers[i].enabled = false;
-        }
-        
-        // Disable player colliders to prevent physics interactions
-        foreach (var collider in playerColliders)
-        {
-            collider.enabled = false;
-        }
 
         // Enable control on possessed object
         possessedController = target.GetComponent<PossessableController>();
@@ -93,49 +125,43 @@ public class Possession : MonoBehaviour
 
         isPossessing = true;
         currentBody = target;
+
+        // Hide hover UI while possessing
+        if (hoverUI != null)
+            hoverUI.SetActive(false);
     }
 
-    void ReturnToPlayer()
+    private void ReturnToPlayer()
     {
-        // Calculate a safe exit position in front of the possessed object
-        Vector3 exitOffset = currentBody.transform.forward * 2f;
-        Vector3 exitPosition = currentBody.transform.position + exitOffset;
+        // Disable movement on the previously possessed object
+        if (possessedController != null)
+            possessedController.SetPossessed(false);
 
-        // Optionally raise the Y position slightly to prevent clipping into the ground
-        exitPosition.y += 0.5f;
+        // Teleport player body back to saved position
+        playerBody.transform.position = savedPosition;
 
-        // Move player body to the exit position
-        playerBody.transform.position = exitPosition;
-
-        // Optionally rotate the player to face the same direction as the possessed object
-        playerBody.transform.rotation = Quaternion.LookRotation(currentBody.transform.forward);
+        // Re-parent the camera to the player body and reset its transform
+        playerCamera.transform.SetParent(playerBody.transform);
+        playerCamera.transform.localPosition = Vector3.up;   // Adjust for head height
+        playerCamera.transform.localRotation = Quaternion.identity;
 
         // Re-enable player movement
         if (playerMovementScript != null)
             playerMovementScript.enabled = true;
 
-        // Re-parent the camera to the player body and reset its position/rotation
-        playerCamera.transform.SetParent(playerBody.transform);
-        playerCamera.transform.localPosition = Vector3.up; // Adjust for head height
-        playerCamera.transform.localRotation = Quaternion.identity;
-        
         // Restore the player's renderer visibility states
         for (int i = 0; i < playerRenderers.Length; i++)
-        {
             playerRenderers[i].enabled = renderersEnabledState[i];
-        }
-        
-        // Re-enable player colliders
-        foreach (var collider in playerColliders)
-        {
-            collider.enabled = true;
-        }
 
-        // Disable movement on the previously possessed object
-        if (possessedController != null)
-            possessedController.SetPossessed(false);
+        // Re-enable player colliders
+        foreach (var col in playerColliders)
+            col.enabled = true;
 
         isPossessing = false;
         currentBody = playerBody;
+
+        // Re-lock cursor when returning to player
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
     }
 }
