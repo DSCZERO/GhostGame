@@ -1,7 +1,6 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;        // ← for RawImage
+using UnityEngine.UI;
 
 public class Pyrokinesis : MonoBehaviour
 {
@@ -12,83 +11,155 @@ public class Pyrokinesis : MonoBehaviour
     public float rayDistance = 5f;
 
     [Header("Audio")]
-    public AudioSource audioSource;    // assign an AudioSource (can be on this GameObject)
-    public AudioClip storeHeatClip;    // sound to play when you pick up heat
-    public AudioClip useHeatClip;      // sound to play when you consume it
+    public AudioSource audioSource;    
+    public AudioClip storeHeatClip;    
+    public AudioClip useHeatClip;      
 
     [Header("UI")]
-    public RawImage heatIndicator;     // drag your RawImage here
+    public RawImage heatIndicator;     
+    [Tooltip("UI element to show when looking at a Fire or Flammable object")]
+    public GameObject interactUI;
 
-    // Reference to GhostMode to restrict use
+    [Header("Ghost Highlight")]
+    [Tooltip("Material to apply to flammable objects while in Ghost Mode")]
+    public Material flammableGhostMaterial;
+
     private GhostMode ghostMode;
+    private bool isHighlightActive = false;
+    private Dictionary<Renderer, Material[]> originalMaterials = new Dictionary<Renderer, Material[]>();
+    private int flammableLayer;
 
     void Awake()
     {
-        // Locate the player's GhostMode via the main camera
         if (Camera.main != null)
             ghostMode = Camera.main.GetComponentInParent<GhostMode>();
 
         if (ghostMode == null)
-            Debug.LogWarning("[Pyrokinesis] GhostMode not found on player; pyrokinesis disabled.");
+            Debug.LogWarning("[Pyrokinesis] GhostMode not found; pyrokinesis disabled.");
+
+        flammableLayer = LayerMask.NameToLayer("Flammable");
+        if (flammableLayer < 0)
+            Debug.LogError("[Pyrokinesis] Layer \"Flammable\" missing—add it in Tags & Layers.");
     }
 
     void Start()
     {
-        // begin with "no heat" indicator
         if (heatIndicator != null)
             heatIndicator.color = Color.black;
+
+        if (interactUI != null)
+            interactUI.SetActive(false);
     }
 
     void Update()
     {
-        // only allow when in ghost form
-        if (ghostMode == null || !ghostMode.IsInGhostMode)
+        // Always update UI prompt, but only show it when ghosted
+        UpdateInteractUI();
+
+        if (ghostMode == null)
+            return;
+
+        // Handle flammable highlight on ghost-enter/exit
+        bool nowGhosted = ghostMode.IsInGhostMode;
+        if (nowGhosted && !isHighlightActive)
+            ActivateFlammableHighlight();
+        else if (!nowGhosted && isHighlightActive)
+            RevertFlammableHighlight();
+
+        // Only allow interactions when ghosted
+        if (!nowGhosted)
             return;
 
         if (Input.GetKeyDown(KeyCode.E))
         {
-            // cast from center of screen
             Ray ray = Camera.main.ScreenPointToRay(
                 new Vector3(Screen.width / 2f, Screen.height / 2f, 0f)
             );
+
             if (Physics.Raycast(ray, out RaycastHit hit, rayDistance))
             {
-                // pick up heat from a Fire-tagged object
+                // Pick up heat from Fire-tagged object (and destroy it)
                 if (hit.transform.CompareTag("Fire") && !heat)
                 {
                     var rend = hit.transform.GetComponent<Renderer>();
-                    if (rend != null)
-                        rend.material.color = Color.white;
+                    if (rend != null) rend.material.color = Color.white;
 
                     heat = true;
+                    audioSource?.PlayOneShot(storeHeatClip);
+                    heatIndicator.color = Color.white;
 
-                    // play store-heat sound
-                    if (audioSource != null && storeHeatClip != null)
-                        audioSource.PlayOneShot(storeHeatClip);
-
-                    // update UI
-                    if (heatIndicator != null)
-                        heatIndicator.color = Color.white;
-
-                    // prevent re-collection by untagging
-                    hit.transform.tag = "Untagged";
+                    Destroy(hit.transform.gameObject);
                 }
-                // consume heat on flammable-layer objects
-                else if (heat && hit.transform.gameObject.layer == LayerMask.NameToLayer("Flammable"))
+                // Consume heat on Flammable-layer object
+                else if (heat && hit.transform.gameObject.layer == flammableLayer)
                 {
-                    // extinguish/destroy
                     Destroy(hit.transform.gameObject);
                     heat = false;
-
-                    // play use-heat sound
-                    if (audioSource != null && useHeatClip != null)
-                        audioSource.PlayOneShot(useHeatClip);
-
-                    // update UI
-                    if (heatIndicator != null)
-                        heatIndicator.color = Color.black;
+                    audioSource?.PlayOneShot(useHeatClip);
+                    heatIndicator.color = Color.black;
                 }
             }
         }
+    }
+
+    private void UpdateInteractUI()
+    {
+        if (interactUI == null || Camera.main == null || ghostMode == null)
+            return;
+
+        // Only show UI when in ghost mode
+        if (!ghostMode.IsInGhostMode)
+        {
+            interactUI.SetActive(false);
+            return;
+        }
+
+        Ray focusRay = Camera.main.ScreenPointToRay(
+            new Vector3(Screen.width / 2f, Screen.height / 2f, 0f)
+        );
+
+        bool showPrompt = false;
+        if (Physics.Raycast(focusRay, out RaycastHit hit, rayDistance))
+        {
+            if (hit.transform.CompareTag("Fire") ||
+                hit.transform.gameObject.layer == flammableLayer)
+            {
+                showPrompt = true;
+            }
+        }
+
+        interactUI.SetActive(showPrompt);
+    }
+
+    private void ActivateFlammableHighlight()
+    {
+        foreach (var rend in FindObjectsOfType<Renderer>())
+        {
+            if (rend.gameObject.layer == flammableLayer)
+            {
+                originalMaterials[rend] = rend.materials;
+                var highlights = new Material[rend.materials.Length];
+                for (int i = 0; i < highlights.Length; i++)
+                    highlights[i] = flammableGhostMaterial;
+                rend.materials = highlights;
+            }
+        }
+        isHighlightActive = true;
+    }
+
+    private void RevertFlammableHighlight()
+    {
+        foreach (var kvp in originalMaterials)
+            if (kvp.Key != null)
+                kvp.Key.materials = kvp.Value;
+
+        originalMaterials.Clear();
+        isHighlightActive = false;
+    }
+
+    private void OnDisable()
+    {
+        if (isHighlightActive)
+            RevertFlammableHighlight();
     }
 }
