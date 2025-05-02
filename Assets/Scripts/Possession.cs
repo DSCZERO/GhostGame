@@ -54,7 +54,7 @@ public class Possession : MonoBehaviour
     {
         UpdateHoverUI();
 
-        if (Input.GetKeyDown(KeyCode.T))
+        if (Input.GetKeyDown(KeyCode.E))
         {
             if (!isPossessing)
                 TryPossess();
