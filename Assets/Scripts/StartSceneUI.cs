@@ -17,19 +17,24 @@ public class StartSceneUI : MonoBehaviour
         SceneManager.LoadScene("TutorialScene");
     }
 
+    public void OpenSceneOne()
+    {
+        SceneManager.LoadScene("Level 1");
+    }
+
     public void OpenSceneTwo()
     {
-        SceneManager.LoadScene("Level2");
+        SceneManager.LoadScene("Level 2");
     }
 
     public void OpenSceneThree()
     {
-        SceneManager.LoadScene("Level3");
+        SceneManager.LoadScene("Level 3");
     }
 
     public void OpenSceneFour()
     {
-        // SceneManager.LoadScene("Level4");
+        SceneManager.LoadScene("Level 4");
     }
 
     public void ExitGame()
