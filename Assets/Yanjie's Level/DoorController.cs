@@ -4,7 +4,7 @@ using UnityEngine;
 public class DoorController : MonoBehaviour
 {
     [Header("Door Settings")]
-    public float interactDistance = 2.5f; // Distance at which player can interact with door
+    public float interactDistance = 5.0f; // Distance at which player can interact with door
     public float moveDistance = 4.0f; // Distance the door moves upward
     public float moveDuration = 2.0f; // Time taken for door to move
     
