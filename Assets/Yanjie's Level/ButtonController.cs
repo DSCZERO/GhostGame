@@ -3,19 +3,19 @@ using UnityEngine;
 
 public class ButtonController : MonoBehaviour
 {
-    [Header("按钮设置")]
-    public float interactDistance = 2.5f; // 玩家与按钮的交互距离
-    public float colorChangeSpeed = 2.0f; // 颜色变化速度
+    [Header("Button Settings")]
+    public float interactDistance = 2.5f; // Distance at which player can interact with button
+    public float colorChangeSpeed = 2.0f; // Speed of color transition
     
-    [Header("引用")]
-    [Tooltip("需要由此按钮激活的门")]
+    [Header("References")]
+    [Tooltip("Door to be activated by this button")]
     public DoorController targetDoor;
     
-    // 颜色设置
+    // Color settings
     private Color deactivatedColor = Color.red;
     private Color activatedColor = Color.green;
     
-    // 状态
+    // State
     private bool isActivated = false;
     private Renderer buttonRenderer;
     private Material buttonMaterial;
@@ -23,29 +23,29 @@ public class ButtonController : MonoBehaviour
     
     void Start()
     {
-        // 获取渲染器和材质
+        // Get renderer and material
         buttonRenderer = GetComponent<Renderer>();
         if (buttonRenderer == null)
         {
-            Debug.LogError("按钮缺少渲染器组件!");
+            Debug.LogError("Button is missing Renderer component!");
             return;
         }
         
-        // 保存材质引用并设置初始颜色
+        // Save material reference and set initial color
         buttonMaterial = buttonRenderer.material;
         buttonMaterial.color = deactivatedColor;
         
-        // 查找玩家的GhostMode组件
+        // Find player's GhostMode component
         if (Camera.main != null)
             playerGhostMode = Camera.main.GetComponentInParent<GhostMode>();
         
         if (playerGhostMode == null)
-            Debug.LogWarning("找不到GhostMode组件，按钮功能可能受限");
+            Debug.LogWarning("GhostMode component not found, button functionality may be limited");
     }
     
     void Update()
     {
-        // 检查玩家是否在按钮附近，且按下E键，且不在灵魂模式
+        // Check if player is nearby, presses E, and isn't in ghost mode
         if (!isActivated && 
             Input.GetKeyDown(KeyCode.E) && 
             IsPlayerNearby() && 
@@ -59,21 +59,21 @@ public class ButtonController : MonoBehaviour
     {
         if (Camera.main == null) return false;
         
-        // 获取玩家位置 (从摄像机的父物体)
+        // Get player position (from camera's parent)
         Transform playerTransform = Camera.main.transform.parent;
         if (playerTransform == null) return false;
         
-        // 计算距离
+        // Calculate distance
         float distance = Vector3.Distance(transform.position, playerTransform.position);
         return distance <= interactDistance;
     }
     
     private bool IsPlayerHuman()
     {
-        // 如果没有找到GhostMode组件，默认允许交互
+        // If GhostMode component not found, default to allowing interaction
         if (playerGhostMode == null) return true;
         
-        // 只有在非灵魂模式下才能交互
+        // Only allow interaction when not in ghost mode
         return !playerGhostMode.IsInGhostMode;
     }
     
@@ -81,10 +81,10 @@ public class ButtonController : MonoBehaviour
     {
         isActivated = true;
         
-        // 开始颜色渐变
+        // Start color transition
         StartCoroutine(ChangeColorRoutine());
         
-        // 通知目标门此按钮已激活
+        // Notify target door that this button has been activated
         if (targetDoor != null)
             targetDoor.RegisterButtonActivation();
     }
@@ -100,7 +100,7 @@ public class ButtonController : MonoBehaviour
             yield return null;
         }
         
-        // 确保最终颜色是正确的
+        // Ensure final color is correct
         buttonMaterial.color = activatedColor;
     }
 }

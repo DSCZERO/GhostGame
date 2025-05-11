@@ -3,16 +3,16 @@ using UnityEngine;
 
 public class DoorController : MonoBehaviour
 {
-    [Header("门设置")]
-    public float interactDistance = 2.5f; // 玩家与门的交互距离
-    public float moveDistance = 4.0f; // 门向上移动的距离
-    public float moveDuration = 2.0f; // 门移动所需时间
+    [Header("Door Settings")]
+    public float interactDistance = 2.5f; // Distance at which player can interact with door
+    public float moveDistance = 4.0f; // Distance the door moves upward
+    public float moveDuration = 2.0f; // Time taken for door to move
     
-    [Header("激活要求")]
-    [Tooltip("激活此门所需的按钮数量")]
+    [Header("Activation Requirements")]
+    [Tooltip("Number of buttons required to activate this door")]
     public int requiredButtonsCount = 1;
     
-    // 状态
+    // State
     private int activatedButtonsCount = 0;
     private bool isDoorOpen = false;
     private Vector3 initialPosition;
@@ -21,21 +21,21 @@ public class DoorController : MonoBehaviour
     
     void Start()
     {
-        // 保存初始位置
+        // Save initial position
         initialPosition = transform.position;
         targetPosition = initialPosition + Vector3.up * moveDistance;
         
-        // 查找玩家的GhostMode组件
+        // Find player's GhostMode component
         if (Camera.main != null)
             playerGhostMode = Camera.main.GetComponentInParent<GhostMode>();
         
         if (playerGhostMode == null)
-            Debug.LogWarning("找不到GhostMode组件，门功能可能受限");
+            Debug.LogWarning("GhostMode component not found, door functionality may be limited");
     }
     
     void Update()
     {
-        // 检查玩家是否在门附近，且按下E键，且能打开门，且不在灵魂模式
+        // Check if player is nearby, presses E, can open door, and isn't in ghost mode
         if (!isDoorOpen && 
             Input.GetKeyDown(KeyCode.E) && 
             IsPlayerNearby() && 
@@ -50,28 +50,28 @@ public class DoorController : MonoBehaviour
     {
         if (Camera.main == null) return false;
         
-        // 获取玩家位置 (从摄像机的父物体)
+        // Get player position (from camera's parent)
         Transform playerTransform = Camera.main.transform.parent;
         if (playerTransform == null) return false;
         
-        // 计算距离
+        // Calculate distance
         float distance = Vector3.Distance(transform.position, playerTransform.position);
         return distance <= interactDistance;
     }
     
     private bool IsPlayerHuman()
     {
-        // 如果没有找到GhostMode组件，默认允许交互
+        // If GhostMode component not found, default to allowing interaction
         if (playerGhostMode == null) return true;
         
-        // 只有在非灵魂模式下才能交互
+        // Only allow interaction when not in ghost mode
         return !playerGhostMode.IsInGhostMode;
     }
     
     public void RegisterButtonActivation()
     {
         activatedButtonsCount++;
-        Debug.Log($"按钮已激活 ({activatedButtonsCount}/{requiredButtonsCount})");
+        Debug.Log($"Button activated ({activatedButtonsCount}/{requiredButtonsCount})");
     }
     
     private bool CanOpenDoor()
@@ -96,12 +96,12 @@ public class DoorController : MonoBehaviour
             elapsed += Time.deltaTime;
             float t = elapsed / moveDuration;
             
-            // 平滑移动门
+            // Smoothly move the door
             transform.position = Vector3.Lerp(initialPosition, targetPosition, t);
             yield return null;
         }
         
-        // 确保门到达最终位置
+        // Ensure door reaches final position
         transform.position = targetPosition;
     }
 }
