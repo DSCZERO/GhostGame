@@ -37,6 +37,11 @@ public class StartSceneUI : MonoBehaviour
         SceneManager.LoadScene("StartLevel4");
     }
 
+    public void OpenLVL4()
+    {
+        SceneManager.LoadScene("Level 4");
+    }
+
     public void ExitGame()
     {
         Application.Quit();
