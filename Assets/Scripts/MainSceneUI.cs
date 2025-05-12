@@ -12,9 +12,7 @@ public class MainSceneUI : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape)) {
-            OpenScene();
-        }
+        
     }
 
     public void OpenScene()

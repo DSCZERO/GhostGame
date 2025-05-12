@@ -130,8 +130,7 @@ public class LevelCompleteManager : MonoBehaviour
             // Update text with current countdown
             if (completionText != null)
             {
-                completionText.text = $"Congratulations! You will proceed to level 2 in {Mathf.CeilToInt(remainingTime)} seconds.";
-            }
+                completionText.text = $"Congratulations! You will proceed to {nextLevelName} in {Mathf.CeilToInt(remainingTime)} seconds.";            }
             
             yield return new WaitForSeconds(0.1f); // Update more frequently for smoother countdown
             remainingTime -= 0.1f;

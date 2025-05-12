@@ -34,6 +34,11 @@ public class StartSceneUI : MonoBehaviour
 
     public void OpenSceneFour()
     {
+        SceneManager.LoadScene("StartLevel4");
+    }
+
+    public void OpenLVL4()
+    {
         SceneManager.LoadScene("Level 4");
     }
 

@@ -11747,9 +11747,21 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1325906074}
     m_Modifications:
+    - target: {fileID: 654339199726194587, guid: 7db13624a91be73429a9b5ec73aca3ed, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
     - target: {fileID: 1051425599893916091, guid: 7db13624a91be73429a9b5ec73aca3ed, type: 3}
       propertyPath: m_Name
       value: DungeonWall (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1051425599893916091, guid: 7db13624a91be73429a9b5ec73aca3ed, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 1051425599893916091, guid: 7db13624a91be73429a9b5ec73aca3ed, type: 3}
+      propertyPath: m_TagString
+      value: Doors
       objectReference: {fileID: 0}
     - target: {fileID: 7169761517798787459, guid: 7db13624a91be73429a9b5ec73aca3ed, type: 3}
       propertyPath: m_LocalScale.x
@@ -12964,9 +12976,21 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1325906074}
     m_Modifications:
+    - target: {fileID: 654339199726194587, guid: 7db13624a91be73429a9b5ec73aca3ed, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
     - target: {fileID: 1051425599893916091, guid: 7db13624a91be73429a9b5ec73aca3ed, type: 3}
       propertyPath: m_Name
       value: DungeonWall (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1051425599893916091, guid: 7db13624a91be73429a9b5ec73aca3ed, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 1051425599893916091, guid: 7db13624a91be73429a9b5ec73aca3ed, type: 3}
+      propertyPath: m_TagString
+      value: Doors
       objectReference: {fileID: 0}
     - target: {fileID: 7169761517798787459, guid: 7db13624a91be73429a9b5ec73aca3ed, type: 3}
       propertyPath: m_LocalScale.x
@@ -36868,69 +36892,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1340313537}
   m_LocalEulerAnglesHint: {x: -360, y: 90.00001, z: -90.00001}
---- !u!1001 &955146615
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 1340313537}
-    m_Modifications:
-    - target: {fileID: 2519082434057314125, guid: 82561250608dfd54d834633a2ef56879, type: 3}
-      propertyPath: m_Name
-      value: SM_campfire_002
-      objectReference: {fileID: 0}
-    - target: {fileID: 3007916969540830711, guid: 82561250608dfd54d834633a2ef56879, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -0.34201813
-      objectReference: {fileID: 0}
-    - target: {fileID: 3007916969540830711, guid: 82561250608dfd54d834633a2ef56879, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: -30.53777
-      objectReference: {fileID: 0}
-    - target: {fileID: 3007916969540830711, guid: 82561250608dfd54d834633a2ef56879, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 13.855892
-      objectReference: {fileID: 0}
-    - target: {fileID: 3007916969540830711, guid: 82561250608dfd54d834633a2ef56879, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3007916969540830711, guid: 82561250608dfd54d834633a2ef56879, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3007916969540830711, guid: 82561250608dfd54d834633a2ef56879, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3007916969540830711, guid: 82561250608dfd54d834633a2ef56879, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3007916969540830711, guid: 82561250608dfd54d834633a2ef56879, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3007916969540830711, guid: 82561250608dfd54d834633a2ef56879, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3007916969540830711, guid: 82561250608dfd54d834633a2ef56879, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents:
-    - {fileID: 8936672342496048613, guid: 82561250608dfd54d834633a2ef56879, type: 3}
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 82561250608dfd54d834633a2ef56879, type: 3}
---- !u!4 &955146616 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 3007916969540830711, guid: 82561250608dfd54d834633a2ef56879, type: 3}
-  m_PrefabInstance: {fileID: 955146615}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &955229746
 GameObject:
   m_ObjectHideFlags: 0
@@ -42787,39 +42748,39 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2445188372755055200, guid: 847dd851dc01fa84fa4636bc2a557199, type: 3}
       propertyPath: m_Layer
-      value: 7
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2445188374678660960, guid: 847dd851dc01fa84fa4636bc2a557199, type: 3}
       propertyPath: m_Layer
-      value: 7
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2445188374732307622, guid: 847dd851dc01fa84fa4636bc2a557199, type: 3}
       propertyPath: m_Layer
-      value: 7
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2445188375305785408, guid: 847dd851dc01fa84fa4636bc2a557199, type: 3}
       propertyPath: m_Layer
-      value: 7
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2445188375718385942, guid: 847dd851dc01fa84fa4636bc2a557199, type: 3}
       propertyPath: m_Layer
-      value: 7
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2445188376546004644, guid: 847dd851dc01fa84fa4636bc2a557199, type: 3}
       propertyPath: m_Layer
-      value: 7
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2445188378074765762, guid: 847dd851dc01fa84fa4636bc2a557199, type: 3}
       propertyPath: m_Layer
-      value: 7
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2445188378336289910, guid: 847dd851dc01fa84fa4636bc2a557199, type: 3}
       propertyPath: m_Layer
-      value: 7
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2445188378342018574, guid: 847dd851dc01fa84fa4636bc2a557199, type: 3}
       propertyPath: m_Layer
-      value: 7
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5454697096389907031, guid: 847dd851dc01fa84fa4636bc2a557199, type: 3}
       propertyPath: m_Name
@@ -42898,7 +42859,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   requiredKeyID1: Finish1
   requiredKeyID2: Finish2
-  sceneToLoad: NextScene
+  sceneToLoad: Level4Epilogue
   doorLayerMask:
     serializedVersion: 2
     m_Bits: 1
@@ -45061,9 +45022,21 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 744179782}
     m_Modifications:
+    - target: {fileID: 654339199726194587, guid: 7db13624a91be73429a9b5ec73aca3ed, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
     - target: {fileID: 1051425599893916091, guid: 7db13624a91be73429a9b5ec73aca3ed, type: 3}
       propertyPath: m_Name
       value: DungeonWall
+      objectReference: {fileID: 0}
+    - target: {fileID: 1051425599893916091, guid: 7db13624a91be73429a9b5ec73aca3ed, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 1051425599893916091, guid: 7db13624a91be73429a9b5ec73aca3ed, type: 3}
+      propertyPath: m_TagString
+      value: Doors
       objectReference: {fileID: 0}
     - target: {fileID: 7169761517798787459, guid: 7db13624a91be73429a9b5ec73aca3ed, type: 3}
       propertyPath: m_LocalScale.x
@@ -53738,7 +53711,6 @@ Transform:
   - {fileID: 714150263}
   - {fileID: 968604810}
   - {fileID: 1224151986}
-  - {fileID: 1876412508}
   - {fileID: 395222757}
   - {fileID: 2020239079}
   - {fileID: 1833519570}
@@ -53748,7 +53720,6 @@ Transform:
   - {fileID: 1261198912}
   - {fileID: 1587452942}
   - {fileID: 2040317722}
-  - {fileID: 955146616}
   - {fileID: 857122603}
   - {fileID: 1545933831}
   - {fileID: 1549507424}
@@ -61078,8 +61049,8 @@ Transform:
   m_GameObject: {fileID: 1560140978}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 38.03, y: -10.4234, z: 10.7533}
-  m_LocalScale: {x: 19.88193, y: 10.219092, z: 0.5}
+  m_LocalPosition: {x: 38.03, y: -10.5018, z: 10.6282}
+  m_LocalScale: {x: 20.13244, y: 10.375444, z: 0.5}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 841573527}
@@ -63533,9 +63504,21 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 744179782}
     m_Modifications:
+    - target: {fileID: 654339199726194587, guid: 7db13624a91be73429a9b5ec73aca3ed, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
     - target: {fileID: 1051425599893916091, guid: 7db13624a91be73429a9b5ec73aca3ed, type: 3}
       propertyPath: m_Name
       value: DungeonWall (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1051425599893916091, guid: 7db13624a91be73429a9b5ec73aca3ed, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 1051425599893916091, guid: 7db13624a91be73429a9b5ec73aca3ed, type: 3}
+      propertyPath: m_TagString
+      value: Doors
       objectReference: {fileID: 0}
     - target: {fileID: 7169761517798787459, guid: 7db13624a91be73429a9b5ec73aca3ed, type: 3}
       propertyPath: m_LocalScale.x
@@ -75240,68 +75223,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1340313537}
   m_LocalEulerAnglesHint: {x: -344.78, y: -180.027, z: -89.989006}
---- !u!1001 &1876412507
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 1340313537}
-    m_Modifications:
-    - target: {fileID: 3027832035476860950, guid: e248318a4ce2c7c4ba1cfebfd7dd16d8, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -0.27201843
-      objectReference: {fileID: 0}
-    - target: {fileID: 3027832035476860950, guid: e248318a4ce2c7c4ba1cfebfd7dd16d8, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: -30.079292
-      objectReference: {fileID: 0}
-    - target: {fileID: 3027832035476860950, guid: e248318a4ce2c7c4ba1cfebfd7dd16d8, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 13.905892
-      objectReference: {fileID: 0}
-    - target: {fileID: 3027832035476860950, guid: e248318a4ce2c7c4ba1cfebfd7dd16d8, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3027832035476860950, guid: e248318a4ce2c7c4ba1cfebfd7dd16d8, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3027832035476860950, guid: e248318a4ce2c7c4ba1cfebfd7dd16d8, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3027832035476860950, guid: e248318a4ce2c7c4ba1cfebfd7dd16d8, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3027832035476860950, guid: e248318a4ce2c7c4ba1cfebfd7dd16d8, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3027832035476860950, guid: e248318a4ce2c7c4ba1cfebfd7dd16d8, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3027832035476860950, guid: e248318a4ce2c7c4ba1cfebfd7dd16d8, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5073400250814376840, guid: e248318a4ce2c7c4ba1cfebfd7dd16d8, type: 3}
-      propertyPath: m_Name
-      value: Cube (1)
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: e248318a4ce2c7c4ba1cfebfd7dd16d8, type: 3}
---- !u!4 &1876412508 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 3027832035476860950, guid: e248318a4ce2c7c4ba1cfebfd7dd16d8, type: 3}
-  m_PrefabInstance: {fileID: 1876412507}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1881465028
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -84548,9 +84469,21 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1325906074}
     m_Modifications:
+    - target: {fileID: 654339199726194587, guid: 7db13624a91be73429a9b5ec73aca3ed, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
     - target: {fileID: 1051425599893916091, guid: 7db13624a91be73429a9b5ec73aca3ed, type: 3}
       propertyPath: m_Name
       value: DungeonWall
+      objectReference: {fileID: 0}
+    - target: {fileID: 1051425599893916091, guid: 7db13624a91be73429a9b5ec73aca3ed, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 1051425599893916091, guid: 7db13624a91be73429a9b5ec73aca3ed, type: 3}
+      propertyPath: m_TagString
+      value: Doors
       objectReference: {fileID: 0}
     - target: {fileID: 7169761517798787459, guid: 7db13624a91be73429a9b5ec73aca3ed, type: 3}
       propertyPath: m_LocalScale.x
@@ -85455,9 +85388,21 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 744179782}
     m_Modifications:
+    - target: {fileID: 654339199726194587, guid: 7db13624a91be73429a9b5ec73aca3ed, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
     - target: {fileID: 1051425599893916091, guid: 7db13624a91be73429a9b5ec73aca3ed, type: 3}
       propertyPath: m_Name
       value: DungeonWall (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1051425599893916091, guid: 7db13624a91be73429a9b5ec73aca3ed, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 1051425599893916091, guid: 7db13624a91be73429a9b5ec73aca3ed, type: 3}
+      propertyPath: m_TagString
+      value: Doors
       objectReference: {fileID: 0}
     - target: {fileID: 7169761517798787459, guid: 7db13624a91be73429a9b5ec73aca3ed, type: 3}
       propertyPath: m_LocalScale.x
