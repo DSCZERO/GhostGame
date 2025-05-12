@@ -813,7 +813,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   requiredKeyID1: 1
-  requiredKeyID2: 1
+  requiredKeyID2: 2
   sceneToLoad: StartLevel4
   doorLayerMask:
     serializedVersion: 2
@@ -4900,6 +4900,7 @@ GameObject:
   - component: {fileID: 1355358506}
   - component: {fileID: 1355358505}
   - component: {fileID: 1355358504}
+  - component: {fileID: 1355358507}
   m_Layer: 0
   m_Name: frontRightGate
   m_TagString: Untagged
@@ -4995,6 +4996,25 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1355358502}
   m_Mesh: {fileID: 4300006, guid: ea7647dd4e8b77d40b37f0e48cd89139, type: 3}
+--- !u!114 &1355358507
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1355358502}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: db63be3d49bb7ab4b9d3a8fed5b4aa60, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  requiredKeyID1: 1
+  requiredKeyID2: 2
+  sceneToLoad: StartLevel4
+  doorLayerMask:
+    serializedVersion: 2
+    m_Bits: 1
+  interactRange: 5
 --- !u!1001 &1499876024
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5957,8 +5977,8 @@ MonoBehaviour:
     Giant Graveyard Rescue
 
     Goal: Find the lost key in the tunnel system next
-    to the tower. Use it to open the tomb of Casper Hunt. Take the key and his tomb
-    and hand it to his skeleton to set him free.'
+    to the tower. Use it to open the tomb of Casper Hunt. Take the key from his tomb
+    unlock the graveyard door.'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
