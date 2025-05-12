@@ -565,7 +565,7 @@ MonoBehaviour:
   textFont: {fileID: 0}
   fontSize: 72
   textColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
-  nextLevelName: Level 2
+  nextLevelName: StartLevel2
   waitTimeBeforeLoad: 5
   playerTag: Player
 --- !u!1 &168056060

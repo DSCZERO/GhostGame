@@ -18247,7 +18247,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: baafbdc9480e6284290f8fd98e6e89c6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  completionMessage: Congratulations! You will proceed to level 1 in 5 seconds.
+  completionMessage: Congratulations! You will proceed to level 3 in 5 seconds.
   textFont: {fileID: 0}
   fontSize: 36
   textColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
