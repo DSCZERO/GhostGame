@@ -34,7 +34,7 @@ public class StartSceneUI : MonoBehaviour
 
     public void OpenSceneFour()
     {
-        SceneManager.LoadScene("Level 4");
+        SceneManager.LoadScene("StartLevel4");
     }
 
     public void ExitGame()
