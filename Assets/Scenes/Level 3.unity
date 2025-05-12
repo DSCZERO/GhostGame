@@ -5748,6 +5748,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 2140898997}
     - target: {fileID: 1788835171312251159, guid: 6bacecc4f3df9584198879c73a6b6c36, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1788835171312251159, guid: 6bacecc4f3df9584198879c73a6b6c36, type: 3}
       propertyPath: playerMovementScript
       value: 
       objectReference: {fileID: 1693185062}
@@ -5826,6 +5830,10 @@ PrefabInstance:
     - target: {fileID: 4459864850019384750, guid: 6bacecc4f3df9584198879c73a6b6c36, type: 3}
       propertyPath: m_Name
       value: FirstPersonController
+      objectReference: {fileID: 0}
+    - target: {fileID: 5257675836150682340, guid: 6bacecc4f3df9584198879c73a6b6c36, type: 3}
+      propertyPath: m_Enabled
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5257675836150682340, guid: 6bacecc4f3df9584198879c73a6b6c36, type: 3}
       propertyPath: interactUI
