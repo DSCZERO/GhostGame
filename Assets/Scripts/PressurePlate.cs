@@ -9,8 +9,12 @@ public class PressurePlate : MonoBehaviour
     [Header("Name of the Bool parameter to set")]
     public string animatorBoolName = "open";
 
-    // Reference to the player's GhostMode (so we can ignore when ghosting)
+    [Header("Materials")]
+    public Material activeMaterial;
+    private Material originalMaterial;
+
     private GhostMode ghostMode;
+    private Renderer plateRenderer;
 
     private void Awake()
     {
@@ -20,13 +24,17 @@ public class PressurePlate : MonoBehaviour
 
         if (ghostMode == null)
             Debug.LogWarning("[PressurePlate] Could not find GhostMode on player; ghost check disabled.");
+
+        // Cache the renderer and original material
+        plateRenderer = GetComponent<Renderer>();
+        if (plateRenderer != null)
+            originalMaterial = plateRenderer.material;
     }
 
     private void OnTriggerEnter(Collider other)
     {
         Debug.Log($"Trigger entered by: {other.name}");
 
-        // 1. If the triggering object (or one of its parents) is in ghost mode, ignore it
         var gm = other.GetComponentInParent<GhostMode>();
         if (gm != null && gm.IsInGhostMode)
         {
@@ -34,17 +42,19 @@ public class PressurePlate : MonoBehaviour
             return;
         }
 
-        // 2. Only proceed if this collider belongs to an object with a Rigidbody
         if (other.attachedRigidbody != null)
         {
             Debug.Log("Object with Rigidbody detected.");
             targetAnimator?.SetBool(animatorBoolName, true);
+
+            // Change to active material
+            if (plateRenderer != null && activeMaterial != null)
+                plateRenderer.material = activeMaterial;
         }
     }
 
     private void OnTriggerExit(Collider other)
     {
-        // Same ghost-mode guard on exit
         var gm = other.GetComponentInParent<GhostMode>();
         if (gm != null && gm.IsInGhostMode)
             return;
@@ -53,6 +63,10 @@ public class PressurePlate : MonoBehaviour
         {
             Debug.Log("Object with Rigidbody left.");
             targetAnimator?.SetBool(animatorBoolName, false);
+
+            // Revert to original material
+            if (plateRenderer != null && originalMaterial != null)
+                plateRenderer.material = originalMaterial;
         }
     }
 }

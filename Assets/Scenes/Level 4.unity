@@ -168,6 +168,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   targetAnimator: {fileID: 95000014220660408}
   animatorBoolName: open
+  activeMaterial: {fileID: 2100000, guid: bfde29ca6056acb44a57b2f333b17605, type: 2}
 --- !u!65 &2396742
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -8557,6 +8558,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   targetAnimator: {fileID: 326153150}
   animatorBoolName: open
+  activeMaterial: {fileID: 2100000, guid: bfde29ca6056acb44a57b2f333b17605, type: 2}
 --- !u!65 &277682831
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -20194,6 +20196,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   targetAnimator: {fileID: 95000012698077863}
   animatorBoolName: open
+  activeMaterial: {fileID: 2100000, guid: bfde29ca6056acb44a57b2f333b17605, type: 2}
 --- !u!65 &607090717
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -37112,6 +37115,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   targetAnimator: {fileID: 95000014084954289}
   animatorBoolName: open
+  activeMaterial: {fileID: 2100000, guid: bfde29ca6056acb44a57b2f333b17605, type: 2}
 --- !u!65 &955424849
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -41684,6 +41688,7 @@ Transform:
   - {fileID: 1144363474}
   - {fileID: 55403436}
   - {fileID: 2019355101}
+  - {fileID: 4440494542440738992}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1079494955
@@ -72575,6 +72580,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   targetAnimator: {fileID: 95000012352772816}
   animatorBoolName: open
+  activeMaterial: {fileID: 2100000, guid: bfde29ca6056acb44a57b2f333b17605, type: 2}
 --- !u!65 &1811881255
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -76295,6 +76301,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   targetAnimator: {fileID: 95000012634868445}
   animatorBoolName: open
+  activeMaterial: {fileID: 2100000, guid: bfde29ca6056acb44a57b2f333b17605, type: 2}
 --- !u!65 &1905312569
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -86223,6 +86230,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   targetAnimator: {fileID: 95000013067941659}
   animatorBoolName: open
+  activeMaterial: {fileID: 2100000, guid: bfde29ca6056acb44a57b2f333b17605, type: 2}
 --- !u!65 &2136058907
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -87702,6 +87710,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e248318a4ce2c7c4ba1cfebfd7dd16d8, type: 3}
+--- !u!4 &4440494542440738992 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 3027832035476860950, guid: e248318a4ce2c7c4ba1cfebfd7dd16d8, type: 3}
+  m_PrefabInstance: {fileID: 4440494542440738991}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &8951622562332605389
 PrefabInstance:
   m_ObjectHideFlags: 0
