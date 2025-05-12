@@ -143,10 +143,12 @@ public class Telekinesis : MonoBehaviour
         camR.y = 0; camR.Normalize();
 
         Vector3 dir = Vector3.zero;
-        if (Input.GetKey(KeyCode.UpArrow))    dir += camF;
-        if (Input.GetKey(KeyCode.DownArrow))  dir -= camF;
-        if (Input.GetKey(KeyCode.RightArrow)) dir += camR;
-        if (Input.GetKey(KeyCode.LeftArrow))  dir -= camR;
+        if (Input.GetKey(KeyCode.UpArrow))      dir += camF;
+        if (Input.GetKey(KeyCode.DownArrow))    dir -= camF;
+        if (Input.GetKey(KeyCode.RightArrow))   dir += camR;
+        if (Input.GetKey(KeyCode.LeftArrow))    dir -= camR;
+        if (Input.GetKey(KeyCode.RightShift))   dir += Vector3.up;
+        if (Input.GetKey(KeyCode.RightControl)) dir -= Vector3.down;
 
         if (dir != Vector3.zero)
             targetedObject.position += dir * moveSpeed * Time.deltaTime;
